@@ -15,7 +15,11 @@ Here is the video
 
 Files of the slides and simulation material are found in the [training directory](training). Slides can be viewed using the picture link below.
 
-[![My slides on slideshare](training/first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-electrical-training)
+[![Electrical slides on slideshare](training/electrical-first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-electrical-training)
+
+[![Circuit breaker slides on slideshare](training/cb-first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-circuit-breaker-training)
+
+
 
 ##Equipment
 
