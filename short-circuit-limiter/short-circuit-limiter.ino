@@ -128,25 +128,40 @@ void loop() {
    }
 
 
-//  long long currentTime = millis();
-//
-//  runningTotal += currentValue;
-//  samplesTaken++;
-//
-//  //We don't want to keep printing to screen as it is slow so we just do a running average
-//  if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
-//
-//    lastDisplayTime = currentTime;
-//    double average = runningTotal / samplesTaken;
-//
-//    runningTotal = 0;
-//    samplesTaken = 0;
-//
-//    lcd.setCursor(0, 0);
-//    lcd.print(currentValue);
-//  }
+  displayToScreen(currentValue);
 
 
+}
+
+void displayToScreen(double currentValue){
+
+  long long currentTime = millis();
+
+  runningTotal += currentValue;
+  samplesTaken++;
+
+  //We don't want to keep printing to screen as it is slow so we just do a running average
+  if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
+
+    lastDisplayTime = currentTime;
+    double average = runningTotal / samplesTaken;
+
+    runningTotal = 0;
+    samplesTaken = 0;
+
+    u8g2.setFont(u8g2_font_9x18_tr);
+    char currentBuffer[10];
+
+    dtostrf(currentValue, 4, 2, currentBuffer);
+
+
+    u8g2.clearBuffer();
+
+    u8g2.drawStr(0,20, currentBuffer);
+
+    u8g2.sendBuffer();
+  }
+  
 }
 
 STATE enterMCBTrippedMode(double currentValue){
