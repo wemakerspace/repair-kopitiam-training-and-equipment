@@ -1,4 +1,4 @@
-#include <UC1701.h>
+#include <U8g2lib.h>
 #include "CTSensor.h"
 
 #define CURRENT_ENABLE_THRESHOLD 0.2
@@ -12,7 +12,7 @@
 #define PIN_RELAY_LIMITER 7
 
 #define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
-#define INITIAL_SETTLE_TIME 5000 //15 seconds
+#define INITIAL_SETTLE_TIME 15000 //15 seconds
 
 #define DELAY_BEFORE_LIMITER_RELAY_ENABLE 1000
 
@@ -29,7 +29,7 @@ typedef enum {
 STATE currentState = STATE_MCB_TRIPPED;
 STATE nextState = STATE_WINDOW_BEFORE;
 
-UC1701 lcd;
+U8G2_UC1701_MINI12864_F_4W_SW_SPI u8g2(U8G2_R2, 21, 20, 19, 22);
 CTSensor clamp(PIN_ANALOG, CT_CALIBRATION_VALUE);
 
 unsigned long lastDisplayTime = 0;
@@ -48,28 +48,40 @@ void setup() {
   pinMode(PIN_RELAY_MCB, OUTPUT);
   pinMode(PIN_BUTTON_ENTER, INPUT);
 
-
   changeDisplayBacklight(true);
   passFullCurrentThrough(false);
   changeMCBRelayState(false);
 
+  u8g2.begin();
 
-  lcd.begin();
-  lcd.setCursor(0, 0);
-  lcd.print("Short Circuit Limiter");
+  unsigned long initialTime = millis();
+  unsigned long timeElapsedSinceStart;
 
-  lcd.setCursor(0, 3);
-  lcd.print("Waiting to settle...");
-
-  unsigned long initialTime = 0;
-
-  while((millis() - initialTime) < INITIAL_SETTLE_TIME){
+  while((timeElapsedSinceStart = (millis() - initialTime)) < INITIAL_SETTLE_TIME){
     clamp.doIncrementalMeasurement();
+    unsigned long timeLeft = INITIAL_SETTLE_TIME - timeElapsedSinceStart;
+    unsigned int timeLeftSeconds = timeLeft / 1000;
+  
+    u8g2.clearBuffer();
+
+    u8g2.setFont(u8g2_font_6x10_tr);
+    u8g2.drawStr(0,10, "Short Circuit Limiter\n");
+    u8g2.drawStr(0,35, "Starting in: ");
+
+    u8g2.setFont(u8g2_font_9x18_tr);
+    char secondsBuffer[10];
+    sprintf(secondsBuffer, "%ds", timeLeftSeconds);
+    
+    u8g2.drawStr(80, 35, secondsBuffer);
+    u8g2.setFont(u8g2_font_5x8_tr);
+    u8g2.drawStr(0,60, "Designer: Yeo Kheng Meng");
+
+    u8g2.sendBuffer();
+   
   }
 
   //To clear the accmulated reading
   clamp.getIrmsFromIncrementalMeasurement();
-  lcd.clear();
   
   Serial.begin(115200);
   Serial.println("Setup complete");
@@ -116,23 +128,23 @@ void loop() {
    }
 
 
-  long long currentTime = millis();
-
-  runningTotal += currentValue;
-  samplesTaken++;
-
-  //We don't want to keep printing to screen as it is slow so we just do a running average
-  if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
-
-    lastDisplayTime = currentTime;
-    double average = runningTotal / samplesTaken;
-
-    runningTotal = 0;
-    samplesTaken = 0;
-
-    lcd.setCursor(0, 0);
-    lcd.print(currentValue);
-  }
+//  long long currentTime = millis();
+//
+//  runningTotal += currentValue;
+//  samplesTaken++;
+//
+//  //We don't want to keep printing to screen as it is slow so we just do a running average
+//  if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
+//
+//    lastDisplayTime = currentTime;
+//    double average = runningTotal / samplesTaken;
+//
+//    runningTotal = 0;
+//    samplesTaken = 0;
+//
+//    lcd.setCursor(0, 0);
+//    lcd.print(currentValue);
+//  }
 
 
 }
