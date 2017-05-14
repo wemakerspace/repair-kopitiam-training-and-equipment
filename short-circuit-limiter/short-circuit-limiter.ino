@@ -50,7 +50,7 @@ void setup() {
 
 
   changeDisplayBacklight(true);
-  changeLimiterRelayState(false);
+  passFullCurrentThrough(false);
   changeMCBRelayState(false);
 
 
@@ -70,19 +70,11 @@ void setup() {
   //To clear the accmulated reading
   clamp.getIrmsFromIncrementalMeasurement();
   lcd.clear();
-  //changeDisplayBacklight(false);
-
-
-
   
   Serial.begin(115200);
-
   Serial.println("Setup complete");
 
   enterWindowBeforeMode(0);
-
-
-
 }
 
 double getCurrentMeasurement(){
@@ -223,16 +215,6 @@ STATE enterWindowExitedMode(double currentValue){
 
 }
 
-void passFullCurrentThrough(bool state){
-  if(state){
-    changeLimiterRelayState(true);
-    changeDisplayBacklight(true);
-  } else {
-    changeLimiterRelayState(false);
-    changeDisplayBacklight(false);
-  }
-}
-
 void changeMCBRelayState(bool state){
   if(state){
     digitalWrite(PIN_RELAY_MCB, HIGH);
@@ -241,7 +223,7 @@ void changeMCBRelayState(bool state){
   }
 }
 
-void changeLimiterRelayState(bool state){
+void passFullCurrentThrough(bool state){
   if(state){
     digitalWrite(PIN_RELAY_LIMITER, HIGH);
   } else {
