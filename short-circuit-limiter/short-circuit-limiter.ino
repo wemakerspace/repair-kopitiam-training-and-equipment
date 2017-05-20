@@ -8,6 +8,11 @@
 #define TEMP_WARN 70
 #define TEMP_WARNING_RATE 120000 //2 x 60 x 1000ms
 
+#define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
+#define INITIAL_SETTLE_TIME 20000 //20 seconds
+
+#define BUTTON_DEBOUNCE 300
+
 #define PIN_LED 26
 #define PIN_CT A0
 #define PIN_TEMP A11
@@ -23,9 +28,6 @@
 #define BUZZER_BEEP_ON_TIME 20
 #define BUZZER_BEEP_OFF_TIME 200
 #define BUZZER_LONG_BEEP_TIME 2000
-
-#define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
-#define INITIAL_SETTLE_TIME 20000 //20 seconds
 
 #define DELAY_BEFORE_LIMITER_RELAY_ENABLE 1000
 
@@ -79,9 +81,9 @@ void setup() {
   unsigned long timeElapsedSinceStart;
 
   while((timeElapsedSinceStart = (millis() - initialTime)) < INITIAL_SETTLE_TIME){
-  if(isAtLeastOneButtonPressed()){
-    break;
-  }
+    if(isAtLeastOneButtonPressed()){
+      break;
+    }
     
     getCurrentMeasurement();
     
@@ -510,7 +512,17 @@ bool isAtLeastOneButtonPressed(){
   int downPressed = digitalRead(PIN_BUTTON_DOWN);
 
   if(upPressed == LOW || enterPressed == LOW || downPressed == LOW){
-    return true;
+
+    static unsigned long lastPressedTime = 0;
+    unsigned long currentTime = millis();
+
+    if((currentTime - lastPressedTime) > BUTTON_DEBOUNCE){
+      lastPressedTime = currentTime;
+      return true;
+    } else {
+      return false;
+    }  
+
   } else {
     return false;
   }
