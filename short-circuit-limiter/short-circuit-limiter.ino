@@ -18,7 +18,7 @@
 #define BUZZER_LONG_BEEP_TIME 500
 
 #define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
-#define INITIAL_SETTLE_TIME 15000 //15 seconds
+#define INITIAL_SETTLE_TIME 20000 //20 seconds
 
 #define DELAY_BEFORE_LIMITER_RELAY_ENABLE 1000
 
@@ -69,7 +69,8 @@ void setup() {
   unsigned long timeElapsedSinceStart;
 
   while((timeElapsedSinceStart = (millis() - initialTime)) < INITIAL_SETTLE_TIME){
-    clamp.doIncrementalMeasurement();
+    getCurrentMeasurement();
+    
     unsigned long timeLeft = INITIAL_SETTLE_TIME - timeElapsedSinceStart;
     unsigned int timeLeftSeconds = timeLeft / 1000;
   
@@ -91,9 +92,6 @@ void setup() {
    
   }
 
-  //To clear the accmulated reading
-  clamp.getIrmsFromIncrementalMeasurement();
-  
   Serial.begin(115200);
   Serial.println("Setup complete");
 
