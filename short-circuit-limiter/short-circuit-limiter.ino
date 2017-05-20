@@ -4,6 +4,7 @@
 #define CURRENT_ENABLE_THRESHOLD 0.23
 #define CURRENT_MCB_CUT 16
 
+#define TEMP_MAX 85
 #define TEMP_WARNING 70
 #define TEMP_WARNING_RATE 120000 //2 x 60 x 1000ms
 
@@ -41,7 +42,7 @@
 #define BACKLIGHT_BLINK_RATE 200
 
 typedef enum {
-  STATE_MCB_TRIPPED, STATE_WINDOW_BEFORE, STATE_WINDOW_WITHIN, STATE_WINDOW_EXITED
+  STATE_MCB_TRIPPED, STATE_WINDOW_BEFORE, STATE_WINDOW_WITHIN, STATE_WINDOW_EXITED, STATE_TEMP_MAX
 } STATE;
 
 //This is to prepare to transition to the STATE_WINDOW_BEFORE at the start
@@ -140,6 +141,9 @@ void loop() {
     case STATE_WINDOW_EXITED:
       nextState = enterWindowExitedMode(currentValue);
       break;
+    case STATE_TEMP_MAX:
+      nextState = enterTempMaxMode();
+      break;
     default:
       Serial.println("Something is really wrong here, this mode should not exist!!!");
       break;
@@ -154,9 +158,11 @@ void loop() {
 void displayToScreen(double currentValue){
   long long currentTime = millis();
 
+  static unsigned long lastDisplayTime;
+
   if(currentState == STATE_MCB_TRIPPED){
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_7x13_tr);
+    u8g2.setFont(u8g2_font_9x18_tr);
     u8g2.drawStr(0,10, "Overcurrent!!!");
 
     u8g2.drawStr(0,31, "Reset MCB >>>>>>>>");
@@ -175,6 +181,39 @@ void displayToScreen(double currentValue){
     
     u8g2.sendBuffer();
 
+  } else if(currentState == STATE_TEMP_MAX){ 
+    if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
+
+      lastDisplayTime = currentTime;
+      float temperature = getTemperature();
+
+      u8g2.clearBuffer();
+      u8g2.setFont(u8g2_font_9x18_tr);
+      u8g2.drawStr(0,10, "Overheated!!!");
+  
+      char valueBuff[10];
+      char fullBuff[30];
+      
+      u8g2.setFont(u8g2_font_7x13_tr);
+      dtostrf(temperature, 3, 0, valueBuff);
+      sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
+      u8g2.drawStr(0,30, fullBuff);
+
+      u8g2.setFont(u8g2_font_6x10_tr);
+      dtostrf(TEMP_MAX, 3, 0, valueBuff);
+      sprintf(fullBuff,"Temp Max : %sC", valueBuff);
+      u8g2.drawStr(0,50, fullBuff);
+
+      dtostrf(TEMP_WARNING, 3, 0, valueBuff);
+      sprintf(fullBuff,"Temp Warn: %sC", valueBuff);
+      u8g2.drawStr(0,60, fullBuff);  
+      
+      u8g2.sendBuffer();
+
+
+      
+    }
+  
   } else {
 
     static double runningTotal = 0;
@@ -183,12 +222,11 @@ void displayToScreen(double currentValue){
     runningTotal += currentValue;
     samplesTaken++;
     
-    static unsigned long lastDisplayTime;
     //We don't want to keep printing to screen as it is slow so we just do a running average
-    if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
-      float temperature = getTemperature();
-  
+    if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){  
       lastDisplayTime = currentTime;
+
+      float temperature = getTemperature();
       double average = runningTotal / samplesTaken;
   
       runningTotal = 0;
@@ -223,8 +261,8 @@ void displayToScreen(double currentValue){
        sprintf(fullBuff,"Current  : %sA", valueBuff);
        u8g2.drawStr(0,33, fullBuff);
 
-       dtostrf(temperature, 2, 0, valueBuff);
-       sprintf(fullBuff,"Int. Temp: %sC", valueBuff);
+       dtostrf(temperature, 3, 0, valueBuff);
+       sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
        u8g2.drawStr(0,47, fullBuff);
 
        u8g2.setFont(u8g2_font_5x8_tr);
@@ -300,8 +338,8 @@ STATE enterWindowBeforeMode(double currentValue){
     changeDisplayBacklight(false);
 
     currentState = STATE_WINDOW_BEFORE;
-    Serial.println("Window Before");
     shortBeepXTimesNoDelay(2);
+    Serial.println("Window Before");
   }
 
   if(isAtLeastOneButtonPressed()){
@@ -343,8 +381,8 @@ STATE enterWindowExitedMode(double currentValue){
   if(currentState != STATE_WINDOW_EXITED){
     currentState = STATE_WINDOW_EXITED;
     changeDisplayBacklight(true);
-    Serial.println("Exited window, bypass resistor");
     shortBeepXTimesNoDelay(1);
+    Serial.println("Exited window, bypass resistor");
   }
 
   passFullCurrentThrough(true);
@@ -355,6 +393,27 @@ STATE enterWindowExitedMode(double currentValue){
     return STATE_WINDOW_EXITED;
   } 
 
+}
+
+STATE enterTempMaxMode(){
+  if(currentState != STATE_TEMP_MAX){
+    currentState = STATE_TEMP_MAX;
+    
+    changeMCBRelayState(false);
+    passFullCurrentThrough(false);
+    
+    changeDisplayBacklight(true);
+    shortBeepXTimesNoDelay(10);
+    Serial.println("Enter Max Temp mode");
+  }
+
+  float temperature = getTemperature();
+
+  if(temperature >= TEMP_MAX){
+    return STATE_TEMP_MAX; 
+  } else {
+    return STATE_WINDOW_BEFORE;  
+  }
 }
 
 void changeMCBRelayState(bool state){
@@ -451,15 +510,17 @@ void shortBeepRunner(){
           beepCurrentlyOn = true;
       }
     }
-    
   }
-  
   
 }
 
 
 void temperatureWarningCheck(float temperature){
-  if(temperature > TEMP_WARNING){
+
+  if(temperature >= TEMP_MAX){
+    nextState = STATE_TEMP_MAX;
+  
+  } else if(temperature >= TEMP_WARNING){
     static unsigned long lastTempAlert = 0;
 
     unsigned long currentTime = millis();
