@@ -258,8 +258,7 @@ void displayToScreen(double currentValue){
       u8g2.clearBuffer();
       u8g2.setFont(u8g2_font_7x13_tr);
 
-      
-      switch(nextState){
+      switch(currentState){
         case STATE_WINDOW_BEFORE:
           u8g2.drawStr(0,10, "Limiter: In Effect");
           break;
@@ -277,6 +276,8 @@ void displayToScreen(double currentValue){
           break;
        }
 
+       bool tempWarning = temperatureWarningCheck(temperature);
+
        char valueBuff[10];
        char fullBuff[30];
         
@@ -284,20 +285,24 @@ void displayToScreen(double currentValue){
        sprintf(fullBuff,"Current  : %sA", valueBuff);
        u8g2.drawStr(0,33, fullBuff);
 
-       dtostrf(temperature, 3, 0, valueBuff);
-       sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
-       u8g2.drawStr(0,47, fullBuff);
+       static bool blinkTempOn = false;
+       blinkTempOn = !blinkTempOn;
+
+       //Start blinking when temperature is warning range
+       if(!tempWarning || blinkTempOn){
+          dtostrf(temperature, 3, 0, valueBuff);
+          sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
+          u8g2.drawStr(0,47, fullBuff);
+       }
 
        u8g2.setFont(u8g2_font_5x8_tr);
        dtostrf(CURRENT_ENABLE_THRESHOLD, 4, 2, valueBuff);
        sprintf(fullBuff,"Enable Current: %sA", valueBuff);
        u8g2.drawStr(0,63, fullBuff);
 
-
-   
        u8g2.sendBuffer();
 
-       temperatureWarningCheck(temperature);
+
     }
   }
   
@@ -542,11 +547,12 @@ void shortBeepRunner(){
   
 }
 
-
-void temperatureWarningCheck(float temperature){
+//Returns true if temperature threshold has been reached
+bool temperatureWarningCheck(float temperature){
 
   if(temperature >= TEMP_MAX){
     nextState = STATE_TEMP_MAX;
+    return true;
   
   } else if(temperature >= TEMP_WARN){
     static unsigned long lastTempAlert = 0;
@@ -557,7 +563,11 @@ void temperatureWarningCheck(float temperature){
       lastTempAlert = currentTime;
       shortBeepXTimesNoDelay(5); 
     }
+
+    return true;
     
   }
+
+  return false;
 }
 
