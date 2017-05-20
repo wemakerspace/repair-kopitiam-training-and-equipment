@@ -6,9 +6,12 @@
 
 #define PIN_LED 26
 #define PIN_CT A0
-#define PIN_BUTTON_ENTER 24
 #define PIN_TEMP A11
 #define PIN_BUZZER 4
+
+#define PIN_BUTTON_UP 25
+#define PIN_BUTTON_ENTER 24
+#define PIN_BUTTON_DOWN 23
 
 #define PIN_RELAY_MCB 5
 #define PIN_RELAY_LIMITER 7
@@ -56,8 +59,11 @@ void setup() {
 
   pinMode(PIN_RELAY_LIMITER, OUTPUT);
   pinMode(PIN_RELAY_MCB, OUTPUT);
-  pinMode(PIN_BUTTON_ENTER, INPUT);
   pinMode(PIN_TEMP, INPUT);
+
+  pinMode(PIN_BUTTON_UP, INPUT);
+  pinMode(PIN_BUTTON_ENTER, INPUT);
+  pinMode(PIN_BUTTON_DOWN, INPUT);
 
   changeDisplayBacklight(true);
   passFullCurrentThrough(false);
@@ -274,11 +280,7 @@ STATE enterMCBTrippedMode(double currentValue){
     
   }
 
- 
-
-  int buttonPressed = digitalRead(PIN_BUTTON_ENTER);
-
-  if(buttonPressed == LOW){
+  if(isAtLeastOneButtonPressed()){
     return STATE_WINDOW_BEFORE;
   }
 
@@ -295,6 +297,10 @@ STATE enterWindowBeforeMode(double currentValue){
     currentState = STATE_WINDOW_BEFORE;
     Serial.println("Window Before");
     shortBeepXTimesNoDelay(2);
+  }
+
+  if(isAtLeastOneButtonPressed()){
+    changeDisplayBacklight(true);  
   }
 
 
@@ -396,6 +402,18 @@ float getTemperature(){
   return temperatureC;
 }
 
+bool isAtLeastOneButtonPressed(){
+
+  int upPressed = digitalRead(PIN_BUTTON_UP);
+  int enterPressed = digitalRead(PIN_BUTTON_ENTER);
+  int downPressed = digitalRead(PIN_BUTTON_DOWN);
+
+  if(upPressed == LOW || enterPressed == LOW || downPressed == LOW){
+    return true;
+  } else {
+    return false;
+  }
+}
 
 void shortBeepXTimesNoDelay(int times){
   beepsLeft = times;  
