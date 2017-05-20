@@ -14,7 +14,7 @@
 #define PIN_RELAY_LIMITER 7
 
 #define BUZZER_BEEP_ON_TIME 20
-#define BUZZER_BEEP_OFF_TIME 300
+#define BUZZER_BEEP_OFF_TIME 200
 #define BUZZER_LONG_BEEP_TIME 2000
 
 #define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
@@ -46,6 +46,8 @@ U8G2_UC1701_MINI12864_F_4W_SW_SPI u8g2(U8G2_R2, 21, 20, 19, 22);
 CTSensor clamp(PIN_CT, CT_CALIBRATION_VALUE);
 
 double mcbTrippedCurrent;
+
+int beepsLeft = 0;
 
 void setup() {
 
@@ -134,7 +136,7 @@ void loop() {
       break;
    }
 
-
+  shortBeepRunner();
   displayToScreen(currentValue);
 
 
@@ -292,7 +294,7 @@ STATE enterWindowBeforeMode(double currentValue){
 
     currentState = STATE_WINDOW_BEFORE;
     Serial.println("Window Before");
-    shortBeepXTimes(2);
+    shortBeepXTimesNoDelay(2);
   }
 
 
@@ -331,7 +333,7 @@ STATE enterWindowExitedMode(double currentValue){
     currentState = STATE_WINDOW_EXITED;
     changeDisplayBacklight(true);
     Serial.println("Exited window, bypass resistor");
-    shortBeepXTimes(1);
+    shortBeepXTimesNoDelay(1);
   }
 
   passFullCurrentThrough(true);
@@ -394,12 +396,41 @@ float getTemperature(){
   return temperatureC;
 }
 
-void shortBeepXTimes(int times){
-  for(int i = 0; i < times; i++){
-    digitalWrite(PIN_BUZZER, HIGH);
-    delay(BUZZER_BEEP_ON_TIME);
-    digitalWrite(PIN_BUZZER, LOW);
-    delay(BUZZER_BEEP_OFF_TIME);
+
+void shortBeepXTimesNoDelay(int times){
+  beepsLeft = times;  
+}
+
+//We don't use delay from beeps to avoid holding up the controller
+void shortBeepRunner(){
+
+  static bool beepCurrentlyOn = false;
+  static unsigned long beepChangedTime = 0;
+
+  unsigned long currentTime = millis();
+
+  if(beepsLeft > 0){
+
+    if(beepCurrentlyOn){
+
+      if((currentTime - beepChangedTime) > BUZZER_BEEP_ON_TIME){
+          beepChangedTime = currentTime;
+          digitalWrite(PIN_BUZZER, LOW);
+          beepCurrentlyOn = false;
+          beepsLeft--;
+      }
+      
+    } else {
+
+      if((currentTime - beepChangedTime) > BUZZER_BEEP_OFF_TIME){
+          beepChangedTime = currentTime;
+          digitalWrite(PIN_BUZZER, HIGH);
+          beepCurrentlyOn = true;
+      }
+    }
+    
   }
   
+  
 }
+
