@@ -4,6 +4,9 @@
 #define CURRENT_ENABLE_THRESHOLD 0.23
 #define CURRENT_MCB_CUT 16
 
+#define TEMP_WARNING 70
+#define TEMP_WARNING_RATE 120000 //2 x 60 x 1000ms
+
 #define PIN_LED 26
 #define PIN_CT A0
 #define PIN_TEMP A11
@@ -232,6 +235,8 @@ void displayToScreen(double currentValue){
 
    
        u8g2.sendBuffer();
+
+       temperatureWarningCheck(temperature);
     }
   }
   
@@ -450,5 +455,20 @@ void shortBeepRunner(){
   }
   
   
+}
+
+
+void temperatureWarningCheck(float temperature){
+  if(temperature > TEMP_WARNING){
+    static unsigned long lastTempAlert = 0;
+
+    unsigned long currentTime = millis();
+
+    if((currentTime - lastTempAlert) > TEMP_WARNING_RATE){
+      lastTempAlert = currentTime;
+      shortBeepXTimesNoDelay(5); 
+    }
+    
+  }
 }
 
