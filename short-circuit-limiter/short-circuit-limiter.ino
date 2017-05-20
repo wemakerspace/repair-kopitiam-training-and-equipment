@@ -5,8 +5,9 @@
 #define CURRENT_MCB_CUT 20
 
 #define PIN_LED 26
-#define PIN_ANALOG A0
+#define PIN_CT A0
 #define PIN_BUTTON_ENTER 24
+#define PIN_TEMP A11
 
 #define PIN_RELAY_MCB 5
 #define PIN_RELAY_LIMITER 7
@@ -16,10 +17,13 @@
 
 #define DELAY_BEFORE_LIMITER_RELAY_ENABLE 1000
 
+//Number of temperature reads to average over
+#define TEMP_READS_SET 50
+
 //The MCU can take 5500 samples/s.
 //0.05s seconds will require 275 samples/set
 #define NUM_CT_SAMPLES 275
-#define INTERVAL_PRINT 500
+#define INTERVAL_PRINT 1000
 
 typedef enum {
   STATE_MCB_TRIPPED, STATE_WINDOW_BEFORE, STATE_WINDOW_WITHIN, STATE_WINDOW_EXITED
@@ -30,7 +34,7 @@ STATE currentState = STATE_MCB_TRIPPED;
 STATE nextState = STATE_WINDOW_BEFORE;
 
 U8G2_UC1701_MINI12864_F_4W_SW_SPI u8g2(U8G2_R2, 21, 20, 19, 22);
-CTSensor clamp(PIN_ANALOG, CT_CALIBRATION_VALUE);
+CTSensor clamp(PIN_CT, CT_CALIBRATION_VALUE);
 
 unsigned long lastDisplayTime = 0;
 double runningTotal = 0;
@@ -47,6 +51,7 @@ void setup() {
   pinMode(PIN_RELAY_LIMITER, OUTPUT);
   pinMode(PIN_RELAY_MCB, OUTPUT);
   pinMode(PIN_BUTTON_ENTER, INPUT);
+  pinMode(PIN_TEMP, INPUT);
 
   changeDisplayBacklight(true);
   passFullCurrentThrough(false);
@@ -142,22 +147,27 @@ void displayToScreen(double currentValue){
 
   //We don't want to keep printing to screen as it is slow so we just do a running average
   if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
+    float temperature = getTemperature();
 
     lastDisplayTime = currentTime;
     double average = runningTotal / samplesTaken;
+    Serial.println(average);
 
     runningTotal = 0;
     samplesTaken = 0;
 
     u8g2.setFont(u8g2_font_9x18_tr);
-    char currentBuffer[10];
+    char buffer[10];
 
-    dtostrf(currentValue, 4, 2, currentBuffer);
-
+    dtostrf(currentValue, 4, 2, buffer);
 
     u8g2.clearBuffer();
 
-    u8g2.drawStr(0,20, currentBuffer);
+    u8g2.drawStr(0,20, buffer);
+
+    dtostrf(temperature, 4, 0, buffer);
+
+    u8g2.drawStr(0,40, buffer);
 
     u8g2.sendBuffer();
   }
@@ -188,10 +198,6 @@ STATE enterWindowBeforeMode(double currentValue){
   if(currentState != STATE_WINDOW_BEFORE){
 
     passFullCurrentThrough(false);
-    changeMCBRelayState(false);
-
-    //In order to turn off the Bypass SSR, we have cut power to the entire setup first to prevent residual current from holding the Bypass SSR open
-    delay(50);
     changeMCBRelayState(true);
 
     currentState = STATE_WINDOW_BEFORE;
@@ -267,3 +273,28 @@ void changeDisplayBacklight(bool state){
     digitalWrite(PIN_LED, HIGH);
   }
 }
+
+//Obtained from https://learn.adafruit.com/tmp36-temperature-sensor/using-a-temp-sensor
+float getTemperature(){
+
+  long total = 0; 
+  
+  //First value is usually off
+  analogRead(PIN_TEMP);
+  
+  for(int i = 0; i < TEMP_READS_SET; i++){
+    total += analogRead(PIN_TEMP);
+  }
+  
+  int reading = total / TEMP_READS_SET; 
+  
+  // converting that reading to voltage, for 3.3v arduino use 3.3
+  float voltage = reading * 5.0;
+  voltage /= 1024.0; 
+  
+  // now print out the temperature
+  float temperatureC = (voltage - 0.5) * 100 ;
+  
+  return temperatureC;
+}
+
