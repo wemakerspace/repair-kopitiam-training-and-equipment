@@ -8,9 +8,14 @@
 #define PIN_CT A0
 #define PIN_BUTTON_ENTER 24
 #define PIN_TEMP A11
+#define PIN_BUZZER 4
 
 #define PIN_RELAY_MCB 5
 #define PIN_RELAY_LIMITER 7
+
+#define BUZZER_BEEP_ON_TIME 20
+#define BUZZER_BEEP_OFF_TIME 300
+#define BUZZER_LONG_BEEP_TIME 500
 
 #define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
 #define INITIAL_SETTLE_TIME 15000 //15 seconds
@@ -47,6 +52,8 @@ double mcbTrippedCurrent;
 void setup() {
 
   pinMode(PIN_LED, OUTPUT);
+  pinMode(PIN_BUZZER, OUTPUT);
+
   pinMode(PIN_RELAY_LIMITER, OUTPUT);
   pinMode(PIN_RELAY_MCB, OUTPUT);
   pinMode(PIN_BUTTON_ENTER, INPUT);
@@ -108,7 +115,7 @@ double getCurrentMeasurement(){
 void loop() {
 
   double currentValue = getCurrentMeasurement();
-
+  
   if(currentValue >= CURRENT_MCB_CUT){
     nextState = enterMCBTrippedMode(currentValue);
   }
@@ -183,6 +190,8 @@ STATE enterMCBTrippedMode(double currentValue){
     mcbTrippedCurrent = currentValue;
     Serial.print("MCB tripped at: ");
     Serial.println(mcbTrippedCurrent);
+    longBeep();
+
   }
 
   int buttonPressed = digitalRead(PIN_BUTTON_ENTER);
@@ -202,6 +211,7 @@ STATE enterWindowBeforeMode(double currentValue){
 
     currentState = STATE_WINDOW_BEFORE;
     Serial.println("Window Before");
+    shortBeepXTimes(2);
   }
 
 
@@ -236,6 +246,7 @@ STATE enterWindowExitedMode(double currentValue){
   if(currentState != STATE_WINDOW_EXITED){
     currentState = STATE_WINDOW_EXITED;
     Serial.println("Exited window, bypass resistor");
+    shortBeepXTimes(1);
   }
 
   passFullCurrentThrough(true);
@@ -296,5 +307,21 @@ float getTemperature(){
   float temperatureC = (voltage - 0.5) * 100 ;
   
   return temperatureC;
+}
+
+void shortBeepXTimes(int times){
+  for(int i = 0; i < times; i++){
+    digitalWrite(PIN_BUZZER, HIGH);
+    delay(BUZZER_BEEP_ON_TIME);
+    digitalWrite(PIN_BUZZER, LOW);
+    delay(BUZZER_BEEP_OFF_TIME);
+  }
+  
+}
+
+void longBeep(){
+  digitalWrite(PIN_BUZZER, HIGH);
+  delay(BUZZER_LONG_BEEP_TIME);
+  digitalWrite(PIN_BUZZER, LOW);
 }
 
