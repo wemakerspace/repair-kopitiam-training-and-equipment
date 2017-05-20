@@ -1,7 +1,7 @@
 #include <U8g2lib.h>
 #include "CTSensor.h"
 
-#define CURRENT_ENABLE_THRESHOLD 0.23
+#define CURRENT_ENABLE_THRESHOLD 0.2
 #define CURRENT_MCB_CUT 16
 
 #define TEMP_MAX 85
@@ -360,8 +360,12 @@ STATE enterWindowBeforeMode(double currentValue){
     changeMCBRelayState(true);
     changeDisplayBacklight(false);
 
+    //Don't bother beeping if we came from within window. Happens when the current measurement is noisy
+    if(currentState != STATE_WINDOW_WITHIN){
+      shortBeepXTimesNoDelay(2);
+    }
+    
     currentState = STATE_WINDOW_BEFORE;
-    shortBeepXTimesNoDelay(2);
     Serial.println("Window Before");
   }
 
