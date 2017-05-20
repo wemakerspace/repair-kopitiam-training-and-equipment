@@ -1,7 +1,7 @@
 #include <U8g2lib.h>
 #include "CTSensor.h"
 
-#define CURRENT_ENABLE_THRESHOLD 0.2
+#define CURRENT_ENABLE_THRESHOLD 0.23
 #define CURRENT_MCB_CUT 16
 
 #define PIN_LED 26
@@ -15,7 +15,7 @@
 
 #define BUZZER_BEEP_ON_TIME 20
 #define BUZZER_BEEP_OFF_TIME 300
-#define BUZZER_LONG_BEEP_TIME 500
+#define BUZZER_LONG_BEEP_TIME 2000
 
 #define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
 #define INITIAL_SETTLE_TIME 20000 //20 seconds
@@ -28,7 +28,11 @@
 //The MCU can take 5500 samples/s.
 //0.05s seconds will require 275 samples/set
 #define NUM_CT_SAMPLES 275
-#define INTERVAL_PRINT 1000
+
+//Delay between LCD Print to avoid slowing down data collection
+#define INTERVAL_PRINT 500
+
+#define BACKLIGHT_BLINK_RATE 200
 
 typedef enum {
   STATE_MCB_TRIPPED, STATE_WINDOW_BEFORE, STATE_WINDOW_WITHIN, STATE_WINDOW_EXITED
@@ -40,12 +44,6 @@ STATE nextState = STATE_WINDOW_BEFORE;
 
 U8G2_UC1701_MINI12864_F_4W_SW_SPI u8g2(U8G2_R2, 21, 20, 19, 22);
 CTSensor clamp(PIN_CT, CT_CALIBRATION_VALUE);
-
-unsigned long lastDisplayTime = 0;
-double runningTotal = 0;
-int samplesTaken = 0;
-
-unsigned long enableWindowTime = 0;
 
 double mcbTrippedCurrent;
 
@@ -86,7 +84,7 @@ void setup() {
     
     u8g2.drawStr(80, 35, secondsBuffer);
     u8g2.setFont(u8g2_font_5x8_tr);
-    u8g2.drawStr(0,60, "Designer: Yeo Kheng Meng");
+    u8g2.drawStr(0,63, "Designer: Yeo Kheng Meng");
 
     u8g2.sendBuffer();
    
@@ -143,42 +141,100 @@ void loop() {
 }
 
 void displayToScreen(double currentValue){
-
   long long currentTime = millis();
 
-  runningTotal += currentValue;
-  samplesTaken++;
-
-  //We don't want to keep printing to screen as it is slow so we just do a running average
-  if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
-    float temperature = getTemperature();
-
-    lastDisplayTime = currentTime;
-    double average = runningTotal / samplesTaken;
-    Serial.println(average);
-
-    runningTotal = 0;
-    samplesTaken = 0;
-
-    u8g2.setFont(u8g2_font_9x18_tr);
-    char buffer[10];
-
-    dtostrf(currentValue, 4, 2, buffer);
-
+  if(currentState == STATE_MCB_TRIPPED){
     u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_7x13_tr);
+    u8g2.drawStr(0,10, "Overcurrent!!!");
 
-    u8g2.drawStr(0,20, buffer);
+    u8g2.drawStr(0,31, "Reset MCB >>>>>>>>");
 
-    dtostrf(temperature, 4, 0, buffer);
+    char valueBuff[10];
+    char fullBuff[30];
+    
+    dtostrf(mcbTrippedCurrent, 4, 1, valueBuff);
+    sprintf(fullBuff,"Tripped at: %sA", valueBuff);
+    u8g2.drawStr(0,50, fullBuff);
 
-    u8g2.drawStr(0,40, buffer);
-
+    u8g2.setFont(u8g2_font_5x8_tr);
+    dtostrf(CURRENT_MCB_CUT, 4, 1, valueBuff);
+    sprintf(fullBuff,"Trip threshold: %sA", valueBuff);
+    u8g2.drawStr(0,63, fullBuff);
+    
     u8g2.sendBuffer();
+
+  } else {
+
+    static double runningTotal = 0;
+    static int samplesTaken = 0;
+
+    runningTotal += currentValue;
+    samplesTaken++;
+    
+    static unsigned long lastDisplayTime;
+    //We don't want to keep printing to screen as it is slow so we just do a running average
+    if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
+      float temperature = getTemperature();
+  
+      lastDisplayTime = currentTime;
+      double average = runningTotal / samplesTaken;
+  
+      runningTotal = 0;
+      samplesTaken = 0;
+
+      u8g2.clearBuffer();
+      u8g2.setFont(u8g2_font_7x13_tr);
+
+      
+      switch(nextState){
+        case STATE_WINDOW_BEFORE:
+          u8g2.drawStr(0,10, "Limiter: In Effect");
+          break;
+        case STATE_WINDOW_WITHIN:
+          u8g2.drawStr(0,10, "Limiter:");
+          u8g2.drawStr(0,20, "Ready to Bypass...");
+          break;
+        case STATE_WINDOW_EXITED:
+          u8g2.drawStr(0,10, "Limiter: Bypassed");
+          break;
+        case STATE_MCB_TRIPPED:
+          //Fallthrough 
+        default:
+          Serial.println("LCD Printing shouldn't come to this mode!");
+          break;
+       }
+
+       char valueBuff[10];
+       char fullBuff[30];
+        
+       dtostrf(currentValue, 4, 2, valueBuff);
+       sprintf(fullBuff,"Current  : %sA", valueBuff);
+       u8g2.drawStr(0,33, fullBuff);
+
+       dtostrf(temperature, 2, 0, valueBuff);
+       sprintf(fullBuff,"Int. Temp: %sC", valueBuff);
+       u8g2.drawStr(0,47, fullBuff);
+
+       u8g2.setFont(u8g2_font_5x8_tr);
+       dtostrf(CURRENT_ENABLE_THRESHOLD, 4, 2, valueBuff);
+       sprintf(fullBuff,"Enable Current: %sA", valueBuff);
+       u8g2.drawStr(0,63, fullBuff);
+
+
+   
+       u8g2.sendBuffer();
+    }
   }
   
 }
 
 STATE enterMCBTrippedMode(double currentValue){
+
+  static bool initialWarningTriggered = false;
+  static unsigned long initialWarningStart = 0;
+
+  unsigned long currentTime = millis();
 
   if(currentState != STATE_MCB_TRIPPED){
     changeMCBRelayState(false);
@@ -188,9 +244,35 @@ STATE enterMCBTrippedMode(double currentValue){
     mcbTrippedCurrent = currentValue;
     Serial.print("MCB tripped at: ");
     Serial.println(mcbTrippedCurrent);
-    longBeep();
 
+    initialWarningTriggered = true;
+    initialWarningStart = currentTime;
+    digitalWrite(PIN_BUZZER, HIGH);
   }
+
+  //This is to sound the buzzer and blink the Backlight for BACKLIGHT_BLINK_RATE duration 
+  if(initialWarningTriggered){
+
+    static bool displayBacklightCurrentlyOn = false;
+    static unsigned long displayBacklightLastChanged = 0;
+
+    if((currentTime - displayBacklightLastChanged) > BACKLIGHT_BLINK_RATE){
+      displayBacklightLastChanged = currentTime;
+      displayBacklightCurrentlyOn = !displayBacklightCurrentlyOn;
+      changeDisplayBacklight(displayBacklightCurrentlyOn);
+    }
+
+
+    if((currentTime - initialWarningStart) > BUZZER_LONG_BEEP_TIME){
+      initialWarningTriggered = false;
+      digitalWrite(PIN_BUZZER, LOW);
+      changeDisplayBacklight(true);
+       
+    }
+    
+  }
+
+ 
 
   int buttonPressed = digitalRead(PIN_BUTTON_ENTER);
 
@@ -206,6 +288,7 @@ STATE enterWindowBeforeMode(double currentValue){
 
     passFullCurrentThrough(false);
     changeMCBRelayState(true);
+    changeDisplayBacklight(false);
 
     currentState = STATE_WINDOW_BEFORE;
     Serial.println("Window Before");
@@ -223,6 +306,8 @@ STATE enterWindowBeforeMode(double currentValue){
 
 STATE enterWindowWithinMode(double currentValue){
   unsigned long currentTime = millis();
+
+  static unsigned long enableWindowTime = 0;
   
   if(currentState != STATE_WINDOW_WITHIN){
     currentState = STATE_WINDOW_WITHIN;
@@ -233,6 +318,7 @@ STATE enterWindowWithinMode(double currentValue){
   if(currentValue < CURRENT_ENABLE_THRESHOLD){
     return STATE_WINDOW_BEFORE;
   } else if((currentTime - enableWindowTime) >= DELAY_BEFORE_LIMITER_RELAY_ENABLE){
+    //Exit window if no overcurrent is detected in this time
     return STATE_WINDOW_EXITED;
   } else {
     return STATE_WINDOW_WITHIN;
@@ -243,6 +329,7 @@ STATE enterWindowExitedMode(double currentValue){
 
   if(currentState != STATE_WINDOW_EXITED){
     currentState = STATE_WINDOW_EXITED;
+    changeDisplayBacklight(true);
     Serial.println("Exited window, bypass resistor");
     shortBeepXTimes(1);
   }
@@ -316,10 +403,3 @@ void shortBeepXTimes(int times){
   }
   
 }
-
-void longBeep(){
-  digitalWrite(PIN_BUZZER, HIGH);
-  delay(BUZZER_LONG_BEEP_TIME);
-  digitalWrite(PIN_BUZZER, LOW);
-}
-
