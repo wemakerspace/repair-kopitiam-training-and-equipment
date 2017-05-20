@@ -58,6 +58,8 @@ double mcbTrippedCurrent;
 
 int beepsLeft = 0;
 
+bool isBacklightAlwaysOn = false;
+
 void setup() {
 
   pinMode(PIN_LED, OUTPUT);
@@ -380,10 +382,7 @@ STATE enterWindowBeforeMode(double currentValue){
     Serial.println("Window Before");
   }
 
-  if(isAtLeastOneButtonPressed()){
-    changeDisplayBacklight(true);  
-  }
-
+  updateDisplayBackLightSettingsForCertainModes();
 
   if(currentValue >= CURRENT_ENABLE_THRESHOLD){
     return STATE_WINDOW_WITHIN;
@@ -403,6 +402,8 @@ STATE enterWindowWithinMode(double currentValue){
     enableWindowTime = currentTime;
     Serial.println("Enter window");
   }
+
+  updateDisplayBackLightSettingsForCertainModes();
 
   if(currentValue < CURRENT_ENABLE_THRESHOLD){
     return STATE_WINDOW_BEFORE;
@@ -455,6 +456,14 @@ STATE enterTempMaxMode(){
   }
 }
 
+void updateDisplayBackLightSettingsForCertainModes(){
+  if(isAtLeastOneButtonPressed()){
+    isBacklightAlwaysOn = !isBacklightAlwaysOn; 
+    changeDisplayBacklight(isBacklightAlwaysOn); 
+  }
+}
+
+
 void changeMCBRelayState(bool state){
   if(state){
     digitalWrite(PIN_RELAY_MCB, HIGH);
@@ -472,6 +481,11 @@ void passFullCurrentThrough(bool state){
 }
 
 void changeDisplayBacklight(bool state){
+
+  //This setting will override whatever the modes want
+  if(isBacklightAlwaysOn){
+    state = true;
+  }
 
   //State is flipped for some reason
   if(state){
