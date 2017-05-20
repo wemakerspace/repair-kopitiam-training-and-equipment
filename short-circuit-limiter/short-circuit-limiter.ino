@@ -5,7 +5,7 @@
 #define CURRENT_MCB_CUT 16
 
 #define TEMP_MAX 85
-#define TEMP_WARNING 70
+#define TEMP_WARN 70
 #define TEMP_WARNING_RATE 120000 //2 x 60 x 1000ms
 
 #define PIN_LED 26
@@ -204,7 +204,7 @@ void displayToScreen(double currentValue){
       sprintf(fullBuff,"Temp Max : %sC", valueBuff);
       u8g2.drawStr(0,50, fullBuff);
 
-      dtostrf(TEMP_WARNING, 3, 0, valueBuff);
+      dtostrf(TEMP_WARN, 3, 0, valueBuff);
       sprintf(fullBuff,"Temp Warn: %sC", valueBuff);
       u8g2.drawStr(0,60, fullBuff);  
       
@@ -409,7 +409,8 @@ STATE enterTempMaxMode(){
 
   float temperature = getTemperature();
 
-  if(temperature >= TEMP_MAX){
+  //We remain in this mode until the temperature drops below TEMP_WARN to prevent oscillating into this mode and out
+  if(temperature >= TEMP_WARN){
     return STATE_TEMP_MAX; 
   } else {
     return STATE_WINDOW_BEFORE;  
@@ -520,7 +521,7 @@ void temperatureWarningCheck(float temperature){
   if(temperature >= TEMP_MAX){
     nextState = STATE_TEMP_MAX;
   
-  } else if(temperature >= TEMP_WARNING){
+  } else if(temperature >= TEMP_WARN){
     static unsigned long lastTempAlert = 0;
 
     unsigned long currentTime = millis();
