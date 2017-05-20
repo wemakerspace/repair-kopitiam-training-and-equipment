@@ -88,14 +88,37 @@ void setup() {
 
     u8g2.setFont(u8g2_font_6x10_tr);
     u8g2.drawStr(0,10, "Short Circuit Limiter\n");
-    u8g2.drawStr(0,35, "Starting in: ");
+    u8g2.drawStr(0,21, "Starting in: ");
 
     u8g2.setFont(u8g2_font_9x18_tr);
     char secondsBuffer[10];
     sprintf(secondsBuffer, "%ds", timeLeftSeconds);
-    
-    u8g2.drawStr(80, 35, secondsBuffer);
+
+    u8g2.drawStr(80, 22, secondsBuffer);
     u8g2.setFont(u8g2_font_5x8_tr);
+
+    char valueBuff[10];
+    char valueBuff2[10];
+    char fullBuff[30];
+
+    float temperature = getTemperature();
+    dtostrf(temperature, 3, 0, valueBuff);
+    sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
+    u8g2.drawStr(0,31, fullBuff);
+
+    dtostrf(TEMP_WARN, 2, 0, valueBuff);
+    dtostrf(TEMP_MAX, 2, 0, valueBuff2);
+    sprintf(fullBuff,"Temp Warn/Max : %s/%s C", valueBuff, valueBuff2);
+    u8g2.drawStr(0,39, fullBuff);
+
+    dtostrf(CURRENT_ENABLE_THRESHOLD, 4, 2, valueBuff);
+    sprintf(fullBuff,"Enable thres: %sA", valueBuff);
+    u8g2.drawStr(0,47, fullBuff);  
+
+    dtostrf(CURRENT_MCB_CUT, 4, 1, valueBuff);
+    sprintf(fullBuff,"Trip thres: %sA", valueBuff);
+    u8g2.drawStr(0,55, fullBuff);
+
     u8g2.drawStr(0,63, "Designer: Yeo Kheng Meng");
 
     u8g2.sendBuffer();
