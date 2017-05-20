@@ -79,6 +79,10 @@ void setup() {
   unsigned long timeElapsedSinceStart;
 
   while((timeElapsedSinceStart = (millis() - initialTime)) < INITIAL_SETTLE_TIME){
+  if(isAtLeastOneButtonPressed()){
+    break;
+  }
+    
     getCurrentMeasurement();
     
     unsigned long timeLeft = INITIAL_SETTLE_TIME - timeElapsedSinceStart;
