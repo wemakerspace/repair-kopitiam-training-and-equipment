@@ -2,7 +2,7 @@
 #include "CTSensor.h"
 
 #define CURRENT_ENABLE_THRESHOLD 0.2
-#define CURRENT_MCB_CUT 20
+#define CURRENT_MCB_CUT 16
 
 #define PIN_LED 26
 #define PIN_CT A0
@@ -41,7 +41,6 @@ double runningTotal = 0;
 int samplesTaken = 0;
 
 unsigned long enableWindowTime = 0;
-
 
 double mcbTrippedCurrent;
 
@@ -182,7 +181,8 @@ STATE enterMCBTrippedMode(double currentValue){
 
     currentState = STATE_MCB_TRIPPED;
     mcbTrippedCurrent = currentValue;
-    Serial.println("MCB tripped");
+    Serial.print("MCB tripped at: ");
+    Serial.println(mcbTrippedCurrent);
   }
 
   int buttonPressed = digitalRead(PIN_BUTTON_ENTER);
