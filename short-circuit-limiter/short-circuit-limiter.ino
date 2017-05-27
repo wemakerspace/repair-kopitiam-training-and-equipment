@@ -130,8 +130,8 @@ void setup() {
       sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
       u8g2.drawStr(0,31, fullBuff);
   
-      dtostrf(TEMP_WARN, 2, 1, valueBuff);
-      dtostrf(TEMP_MAX, 2, 1, valueBuff2);
+      dtostrf(TEMP_WARN, 2, 0, valueBuff);
+      dtostrf(TEMP_MAX, 2, 0, valueBuff2);
       sprintf(fullBuff,"Temp Warn/Max : %s/%s C", valueBuff, valueBuff2);
       u8g2.drawStr(0,39, fullBuff);
   
