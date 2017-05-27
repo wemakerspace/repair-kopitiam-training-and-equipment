@@ -1,4 +1,6 @@
 #include <U8g2lib.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 #include "CTSensor.h"
 
 #define CURRENT_ENABLE_THRESHOLD 0.2
@@ -15,7 +17,7 @@
 
 #define PIN_LED 26
 #define PIN_CT A0
-#define PIN_TEMP A11
+#define PIN_TEMP 2
 #define PIN_BUZZER 4
 
 #define PIN_BUTTON_UP 25
@@ -51,6 +53,13 @@ typedef enum {
 STATE currentState = STATE_MCB_TRIPPED;
 STATE nextState = STATE_WINDOW_BEFORE;
 
+// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
+OneWire oneWire(PIN_TEMP);
+
+// Pass our oneWire reference to Dallas Temperature. 
+DallasTemperature dallasTemp(&oneWire);
+
+
 U8G2_UC1701_MINI12864_F_4W_SW_SPI u8g2(U8G2_R2, 21, 20, 19, 22);
 CTSensor clamp(PIN_CT, CT_CALIBRATION_VALUE);
 
@@ -67,7 +76,6 @@ void setup() {
 
   pinMode(PIN_RELAY_LIMITER, OUTPUT);
   pinMode(PIN_RELAY_MCB, OUTPUT);
-  pinMode(PIN_TEMP, INPUT);
 
   pinMode(PIN_BUTTON_UP, INPUT);
   pinMode(PIN_BUTTON_ENTER, INPUT);
@@ -78,6 +86,7 @@ void setup() {
   changeMCBRelayState(false);
 
   u8g2.begin();
+  dallasTemp.begin();
 
   unsigned long initialTime = millis();
   unsigned long timeElapsedSinceStart;
@@ -504,26 +513,10 @@ void changeDisplayBacklight(bool state){
 
 //Obtained from https://learn.adafruit.com/tmp36-temperature-sensor/using-a-temp-sensor
 float getTemperature(){
-
-  long total = 0; 
-  
-  //First value is usually off
-  analogRead(PIN_TEMP);
-  
-  for(int i = 0; i < TEMP_READS_SET; i++){
-    total += analogRead(PIN_TEMP);
-  }
-  
-  int reading = total / TEMP_READS_SET; 
-  
-  // converting that reading to voltage, for 3.3v arduino use 3.3
-  float voltage = reading * 5.0;
-  voltage /= 1024.0; 
-  
-  // now print out the temperature
-  float temperatureC = (voltage - 0.5) * 100 ;
-  
-  return temperatureC;
+  //There is only one sensor on the bus so just use the first one
+  dallasTemp.requestTemperaturesByIndex(0);
+  float temperature = dallasTemp.getTempCByIndex(0);
+  return temperature;
 }
 
 bool isAtLeastOneButtonPressed(){
