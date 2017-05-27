@@ -218,7 +218,7 @@ void displayToScreen(double currentValue){
     char fullBuff[30];
     
     dtostrf(mcbTrippedCurrent, 4, 1, valueBuff);
-    sprintf(fullBuff,"Tripped at: %sA", valueBuff);
+    sprintf(fullBuff,"Tripped: %sA", valueBuff);
     u8g2.drawStr(0,50, fullBuff);
 
     u8g2.setFont(u8g2_font_5x8_tr);
