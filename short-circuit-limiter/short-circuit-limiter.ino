@@ -126,12 +126,12 @@ void setup() {
       char fullBuff[30];
   
       float temperature = getTemperature();
-      dtostrf(temperature, 3, 0, valueBuff);
+      dtostrf(temperature, 3, 1, valueBuff);
       sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
       u8g2.drawStr(0,31, fullBuff);
   
-      dtostrf(TEMP_WARN, 2, 0, valueBuff);
-      dtostrf(TEMP_MAX, 2, 0, valueBuff2);
+      dtostrf(TEMP_WARN, 2, 1, valueBuff);
+      dtostrf(TEMP_MAX, 2, 1, valueBuff2);
       sprintf(fullBuff,"Temp Warn/Max : %s/%s C", valueBuff, valueBuff2);
       u8g2.drawStr(0,39, fullBuff);
   
@@ -242,16 +242,16 @@ void displayToScreen(double currentValue){
       char fullBuff[30];
       
       u8g2.setFont(u8g2_font_7x13_tr);
-      dtostrf(temperature, 3, 0, valueBuff);
+      dtostrf(temperature, 3, 1, valueBuff);
       sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
       u8g2.drawStr(0,30, fullBuff);
 
       u8g2.setFont(u8g2_font_6x10_tr);
-      dtostrf(TEMP_MAX, 3, 0, valueBuff);
+      dtostrf(TEMP_MAX, 3, 1, valueBuff);
       sprintf(fullBuff,"Temp Max : %sC", valueBuff);
       u8g2.drawStr(0,50, fullBuff);
 
-      dtostrf(TEMP_WARN, 3, 0, valueBuff);
+      dtostrf(TEMP_WARN, 3, 1, valueBuff);
       sprintf(fullBuff,"Temp Warn: %sC", valueBuff);
       u8g2.drawStr(0,60, fullBuff);  
       
@@ -314,7 +314,7 @@ void displayToScreen(double currentValue){
 
        //Start blinking when temperature is warning range
        if(!tempWarning || blinkTempOn){
-          dtostrf(temperature, 3, 0, valueBuff);
+          dtostrf(temperature, 3, 1, valueBuff);
           sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
           u8g2.drawStr(0,47, fullBuff);
        }
