@@ -8,6 +8,7 @@
 #define DEFAULT_CURRENT_ENABLE_THRESHOLD 0.2
 #define CURRENT_THRESHOLD_STRIDE 0.01
 #define MIN_ENABLE_CURRENT_THRESHOLD 0.01
+#define MAX_ENABLE_CURRENT_THRESHOLD 10.00
 #define ADDRESS_STORE_CURRENT_ENABLE 0
 
 #define TEMP_MAX 85
@@ -517,7 +518,8 @@ void updateCurrentThresholdForCertainModes(){
 
 
   if(newThreshold != currentEnableThreshold
-    && newThreshold >= MIN_ENABLE_CURRENT_THRESHOLD){
+    && newThreshold >= MIN_ENABLE_CURRENT_THRESHOLD
+    && newThreshold <= MAX_ENABLE_CURRENT_THRESHOLD){
 
     currentEnableThreshold = newThreshold;
     EEPROM.put(ADDRESS_STORE_CURRENT_ENABLE, currentEnableThreshold);
