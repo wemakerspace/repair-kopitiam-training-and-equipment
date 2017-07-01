@@ -1,10 +1,14 @@
+#include <EEPROM.h>
 #include <U8g2lib.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include "CTSensor.h"
 
-#define DEFAULT_CURRENT_ENABLE_THRESHOLD 0.2
 #define CURRENT_MCB_CUT 16
+#define DEFAULT_CURRENT_ENABLE_THRESHOLD 0.2
+#define CURRENT_THRESHOLD_STRIDE 0.01
+#define MIN_ENABLE_CURRENT_THRESHOLD 0.01
+#define ADDRESS_STORE_CURRENT_ENABLE 0
 
 #define TEMP_MAX 85
 #define TEMP_WARN 70
@@ -69,15 +73,6 @@ int beepsLeft = 0;
 bool isBacklightAlwaysOn = false;
 
 float currentEnableThreshold;
-
-float getEnableThresholdFromEEProm(){
-  return DEFAULT_CURRENT_ENABLE_THRESHOLD;
-}
-
-void changeEnableThreshold(float newThreshold){
-  currentEnableThreshold = newThreshold;
-}
-
 
 void setup() {
 
@@ -495,18 +490,38 @@ void updateDisplayBackLightSettingsForCertainModes(){
   }
 }
 
+float getEnableThresholdFromEEProm(){
+
+  float value;
+
+  EEPROM.get(ADDRESS_STORE_CURRENT_ENABLE, value);
+
+  if(isnan(value)){
+      return DEFAULT_CURRENT_ENABLE_THRESHOLD;
+  } else {
+    return value;
+  }
+
+}
+
 void updateCurrentThresholdForCertainModes(){
   float newThreshold = currentEnableThreshold;
 
   if(isTopButtonPressed()){
-    changeEnableThreshold(currentEnableThreshold += 0.01);
+    newThreshold += CURRENT_THRESHOLD_STRIDE;
   }
 
   if(isBottomButtonPressed()){
-    changeEnableThreshold(currentEnableThreshold -= 0.01);
+    newThreshold -= CURRENT_THRESHOLD_STRIDE;
   }
 
 
+  if(newThreshold != currentEnableThreshold
+    && newThreshold >= MIN_ENABLE_CURRENT_THRESHOLD){
+
+    currentEnableThreshold = newThreshold;
+    EEPROM.put(ADDRESS_STORE_CURRENT_ENABLE, currentEnableThreshold);
+  }
 
 }
 
