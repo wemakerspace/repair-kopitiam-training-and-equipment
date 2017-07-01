@@ -92,7 +92,7 @@ void setup() {
   unsigned long timeElapsedSinceStart;
 
   while((timeElapsedSinceStart = (millis() - initialTime)) < INITIAL_SETTLE_TIME){
-    if(isAtLeastOneButtonPressed()){
+    if(isMiddleButtonPressed()){
       break;
     }
     
@@ -375,7 +375,7 @@ STATE enterMCBTrippedMode(double currentValue){
     
   }
 
-  if(isAtLeastOneButtonPressed()){
+  if(isMiddleButtonPressed()){
     return STATE_WINDOW_BEFORE;
   }
 
@@ -473,7 +473,7 @@ STATE enterTempMaxMode(){
 }
 
 void updateDisplayBackLightSettingsForCertainModes(){
-  if(isAtLeastOneButtonPressed()){
+  if(isMiddleButtonPressed()){
     isBacklightAlwaysOn = !isBacklightAlwaysOn; 
     changeDisplayBacklight(isBacklightAlwaysOn); 
   }
@@ -519,13 +519,11 @@ float getTemperature(){
   return temperature;
 }
 
-bool isAtLeastOneButtonPressed(){
+bool isMiddleButtonPressed(){
 
-  int upPressed = digitalRead(PIN_BUTTON_UP);
   int enterPressed = digitalRead(PIN_BUTTON_ENTER);
-  int downPressed = digitalRead(PIN_BUTTON_DOWN);
 
-  if(upPressed == LOW || enterPressed == LOW || downPressed == LOW){
+  if(enterPressed == LOW){
 
     static unsigned long lastPressedTime = 0;
     unsigned long currentTime = millis();
