@@ -3,7 +3,7 @@
 #include <DallasTemperature.h>
 #include "CTSensor.h"
 
-#define CURRENT_ENABLE_THRESHOLD 0.2
+#define DEFAULT_CURRENT_ENABLE_THRESHOLD 0.2
 #define CURRENT_MCB_CUT 16
 
 #define TEMP_MAX 85
@@ -41,7 +41,7 @@
 #define NUM_CT_SAMPLES 275
 
 //Delay between LCD Print to avoid slowing down data collection
-#define INTERVAL_PRINT 500
+#define INTERVAL_PRINT 300
 
 #define BACKLIGHT_BLINK_RATE 200
 
@@ -56,9 +56,8 @@ STATE nextState = STATE_WINDOW_BEFORE;
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(PIN_TEMP);
 
-// Pass our oneWire reference to Dallas Temperature. 
+// Pass our oneWire reference to Dallas Temperature.
 DallasTemperature dallasTemp(&oneWire);
-
 
 U8G2_UC1701_MINI12864_F_4W_SW_SPI u8g2(U8G2_R2, 21, 20, 19, 22);
 CTSensor clamp(PIN_CT, CT_CALIBRATION_VALUE);
@@ -69,7 +68,20 @@ int beepsLeft = 0;
 
 bool isBacklightAlwaysOn = false;
 
+float currentEnableThreshold;
+
+float getEnableThresholdFromEEProm(){
+  return DEFAULT_CURRENT_ENABLE_THRESHOLD;
+}
+
+void changeEnableThreshold(float newThreshold){
+  currentEnableThreshold = newThreshold;
+}
+
+
 void setup() {
+
+  currentEnableThreshold = getEnableThresholdFromEEProm();
 
   pinMode(PIN_LED, OUTPUT);
   pinMode(PIN_BUZZER, OUTPUT);
@@ -95,56 +107,57 @@ void setup() {
     if(isMiddleButtonPressed()){
       break;
     }
-    
+
     getCurrentMeasurement();
 
     unsigned long currentTime = millis();
     static unsigned long lastDisplayTime = 0;
-    
+
     if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
 
       lastDisplayTime = currentTime;
-      
+
       unsigned long timeLeft = INITIAL_SETTLE_TIME - timeElapsedSinceStart;
       unsigned int timeLeftSeconds = timeLeft / 1000;
-    
+      updateCurrentThresholdForCertainModes();
+
       u8g2.clearBuffer();
-  
+
       u8g2.setFont(u8g2_font_6x10_tr);
       u8g2.drawStr(0,10, "Short Circuit Limiter\n");
       u8g2.drawStr(0,21, "Starting in: ");
-  
+
       u8g2.setFont(u8g2_font_9x18_tr);
       char secondsBuffer[10];
       sprintf(secondsBuffer, "%ds", timeLeftSeconds);
-  
+
       u8g2.drawStr(80, 22, secondsBuffer);
       u8g2.setFont(u8g2_font_5x8_tr);
-  
+
       char valueBuff[10];
       char valueBuff2[10];
       char fullBuff[30];
-  
+
       float temperature = getTemperature();
       dtostrf(temperature, 3, 1, valueBuff);
       sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
       u8g2.drawStr(0,31, fullBuff);
-  
+
       dtostrf(TEMP_WARN, 2, 0, valueBuff);
       dtostrf(TEMP_MAX, 2, 0, valueBuff2);
       sprintf(fullBuff,"Temp Warn/Max : %s/%s C", valueBuff, valueBuff2);
       u8g2.drawStr(0,39, fullBuff);
-  
-      dtostrf(CURRENT_ENABLE_THRESHOLD, 4, 2, valueBuff);
+
+      dtostrf(currentEnableThreshold, 4, 2, valueBuff);
       sprintf(fullBuff,"Enable thres: %sA", valueBuff);
-      u8g2.drawStr(0,47, fullBuff);  
-  
+      u8g2.drawStr(0,47, fullBuff);
+
       dtostrf(CURRENT_MCB_CUT, 4, 1, valueBuff);
       sprintf(fullBuff,"Trip thres: %sA", valueBuff);
       u8g2.drawStr(0,55, fullBuff);
-  
+
       u8g2.drawStr(0,63, "Designer: Yeo Kheng Meng");
-  
+
       u8g2.sendBuffer();
     }
   }
@@ -156,7 +169,7 @@ void setup() {
 }
 
 double getCurrentMeasurement(){
-  
+
   for(int sampleIndex = 0; sampleIndex < NUM_CT_SAMPLES; sampleIndex++){
     clamp.doIncrementalMeasurement();
   }
@@ -170,7 +183,7 @@ double getCurrentMeasurement(){
 void loop() {
 
   double currentValue = getCurrentMeasurement();
-  
+
   if(currentValue >= CURRENT_MCB_CUT){
     nextState = enterMCBTrippedMode(currentValue);
   }
@@ -216,7 +229,7 @@ void displayToScreen(double currentValue){
 
     char valueBuff[10];
     char fullBuff[30];
-    
+
     dtostrf(mcbTrippedCurrent, 4, 1, valueBuff);
     sprintf(fullBuff,"Tripped: %sA", valueBuff);
     u8g2.drawStr(0,50, fullBuff);
@@ -225,10 +238,10 @@ void displayToScreen(double currentValue){
     dtostrf(CURRENT_MCB_CUT, 4, 1, valueBuff);
     sprintf(fullBuff,"Trip threshold: %sA", valueBuff);
     u8g2.drawStr(0,63, fullBuff);
-    
+
     u8g2.sendBuffer();
 
-  } else if(currentState == STATE_TEMP_MAX){ 
+  } else if(currentState == STATE_TEMP_MAX){
     if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
 
       lastDisplayTime = currentTime;
@@ -237,10 +250,10 @@ void displayToScreen(double currentValue){
       u8g2.clearBuffer();
       u8g2.setFont(u8g2_font_9x18_tr);
       u8g2.drawStr(0,10, "Overheated!!!");
-  
+
       char valueBuff[10];
       char fullBuff[30];
-      
+
       u8g2.setFont(u8g2_font_7x13_tr);
       dtostrf(temperature, 3, 1, valueBuff);
       sprintf(fullBuff,"Curr Temp: %sC", valueBuff);
@@ -253,14 +266,14 @@ void displayToScreen(double currentValue){
 
       dtostrf(TEMP_WARN, 3, 1, valueBuff);
       sprintf(fullBuff,"Temp Warn: %sC", valueBuff);
-      u8g2.drawStr(0,60, fullBuff);  
-      
+      u8g2.drawStr(0,60, fullBuff);
+
       u8g2.sendBuffer();
 
 
-      
+
     }
-  
+
   } else {
 
     static double runningTotal = 0;
@@ -268,14 +281,14 @@ void displayToScreen(double currentValue){
 
     runningTotal += currentValue;
     samplesTaken++;
-    
+
     //We don't want to keep printing to screen as it is slow so we just do a running average
-    if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){  
+    if((currentTime - lastDisplayTime) >= INTERVAL_PRINT){
       lastDisplayTime = currentTime;
 
       float temperature = getTemperature();
       double average = runningTotal / samplesTaken;
-  
+
       runningTotal = 0;
       samplesTaken = 0;
 
@@ -294,7 +307,7 @@ void displayToScreen(double currentValue){
           u8g2.drawStr(0,10, "Limiter: Bypassed");
           break;
         case STATE_MCB_TRIPPED:
-          //Fallthrough 
+          //Fallthrough
         default:
           Serial.println("LCD Printing shouldn't come to this mode!");
           break;
@@ -304,7 +317,7 @@ void displayToScreen(double currentValue){
 
        char valueBuff[10];
        char fullBuff[30];
-        
+
        dtostrf(currentValue, 4, 2, valueBuff);
        sprintf(fullBuff,"Current  : %sA", valueBuff);
        u8g2.drawStr(0,33, fullBuff);
@@ -320,7 +333,7 @@ void displayToScreen(double currentValue){
        }
 
        u8g2.setFont(u8g2_font_5x8_tr);
-       dtostrf(CURRENT_ENABLE_THRESHOLD, 4, 2, valueBuff);
+       dtostrf(currentEnableThreshold, 4, 2, valueBuff);
        sprintf(fullBuff,"Enable Current: %sA", valueBuff);
        u8g2.drawStr(0,63, fullBuff);
 
@@ -329,7 +342,7 @@ void displayToScreen(double currentValue){
 
     }
   }
-  
+
 }
 
 STATE enterMCBTrippedMode(double currentValue){
@@ -353,7 +366,7 @@ STATE enterMCBTrippedMode(double currentValue){
     digitalWrite(PIN_BUZZER, HIGH);
   }
 
-  //This is to sound the buzzer and blink the Backlight for BACKLIGHT_BLINK_RATE duration 
+  //This is to sound the buzzer and blink the Backlight for BACKLIGHT_BLINK_RATE duration
   if(initialWarningTriggered){
 
     static bool displayBacklightCurrentlyOn = false;
@@ -370,16 +383,16 @@ STATE enterMCBTrippedMode(double currentValue){
       initialWarningTriggered = false;
       digitalWrite(PIN_BUZZER, LOW);
       changeDisplayBacklight(true);
-       
+
     }
-    
+
   }
 
   if(isMiddleButtonPressed()){
     return STATE_WINDOW_BEFORE;
   }
 
-  return STATE_MCB_TRIPPED; 
+  return STATE_MCB_TRIPPED;
 }
 
 STATE enterWindowBeforeMode(double currentValue){
@@ -393,26 +406,27 @@ STATE enterWindowBeforeMode(double currentValue){
     if(currentState != STATE_WINDOW_WITHIN){
       shortBeepXTimesNoDelay(2);
     }
-    
+
     currentState = STATE_WINDOW_BEFORE;
     Serial.println("Window Before");
   }
 
   updateDisplayBackLightSettingsForCertainModes();
+  updateCurrentThresholdForCertainModes();
 
-  if(currentValue >= CURRENT_ENABLE_THRESHOLD){
+  if(currentValue >= currentEnableThreshold){
     return STATE_WINDOW_WITHIN;
   }
 
   return STATE_WINDOW_BEFORE;
-   
+
 }
 
 STATE enterWindowWithinMode(double currentValue){
   unsigned long currentTime = millis();
 
   static unsigned long enableWindowTime = 0;
-  
+
   if(currentState != STATE_WINDOW_WITHIN){
     currentState = STATE_WINDOW_WITHIN;
     enableWindowTime = currentTime;
@@ -420,15 +434,16 @@ STATE enterWindowWithinMode(double currentValue){
   }
 
   updateDisplayBackLightSettingsForCertainModes();
+  updateCurrentThresholdForCertainModes();
 
-  if(currentValue < CURRENT_ENABLE_THRESHOLD){
+  if(currentValue < currentEnableThreshold){
     return STATE_WINDOW_BEFORE;
   } else if((currentTime - enableWindowTime) >= DELAY_BEFORE_LIMITER_RELAY_ENABLE){
     //Exit window if no overcurrent is detected in this time
     return STATE_WINDOW_EXITED;
   } else {
     return STATE_WINDOW_WITHIN;
-  } 
+  }
 }
 
 STATE enterWindowExitedMode(double currentValue){
@@ -441,22 +456,23 @@ STATE enterWindowExitedMode(double currentValue){
   }
 
   passFullCurrentThrough(true);
+  updateCurrentThresholdForCertainModes();
 
-  if(currentValue < CURRENT_ENABLE_THRESHOLD){
+  if(currentValue < currentEnableThreshold){
     return STATE_WINDOW_BEFORE;
   } else {
     return STATE_WINDOW_EXITED;
-  } 
+  }
 
 }
 
 STATE enterTempMaxMode(){
   if(currentState != STATE_TEMP_MAX){
     currentState = STATE_TEMP_MAX;
-    
+
     changeMCBRelayState(false);
     passFullCurrentThrough(false);
-    
+
     changeDisplayBacklight(true);
     shortBeepXTimesNoDelay(10);
     Serial.println("Enter Max Temp mode");
@@ -466,17 +482,32 @@ STATE enterTempMaxMode(){
 
   //We remain in this mode until the temperature drops below TEMP_WARN to prevent oscillating into this mode and out
   if(temperature >= TEMP_WARN){
-    return STATE_TEMP_MAX; 
+    return STATE_TEMP_MAX;
   } else {
-    return STATE_WINDOW_BEFORE;  
+    return STATE_WINDOW_BEFORE;
   }
 }
 
 void updateDisplayBackLightSettingsForCertainModes(){
   if(isMiddleButtonPressed()){
-    isBacklightAlwaysOn = !isBacklightAlwaysOn; 
-    changeDisplayBacklight(isBacklightAlwaysOn); 
+    isBacklightAlwaysOn = !isBacklightAlwaysOn;
+    changeDisplayBacklight(isBacklightAlwaysOn);
   }
+}
+
+void updateCurrentThresholdForCertainModes(){
+  float newThreshold = currentEnableThreshold;
+
+  if(isTopButtonPressed()){
+    changeEnableThreshold(currentEnableThreshold += 0.01);
+  }
+
+  if(isBottomButtonPressed()){
+    changeEnableThreshold(currentEnableThreshold -= 0.01);
+  }
+
+
+
 }
 
 
@@ -519,29 +550,50 @@ float getTemperature(){
   return temperature;
 }
 
-bool isMiddleButtonPressed(){
+bool isTopButtonPressed(){
+  int upPressed = digitalRead(PIN_BUTTON_UP);
 
+  if(upPressed == LOW){
+    return buttonDebounceComplete();
+  } else {
+    return false;
+  }
+}
+
+bool isMiddleButtonPressed(){
   int enterPressed = digitalRead(PIN_BUTTON_ENTER);
 
   if(enterPressed == LOW){
+    return buttonDebounceComplete();
+  } else {
+    return false;
+  }
+}
 
-    static unsigned long lastPressedTime = 0;
-    unsigned long currentTime = millis();
+bool isBottomButtonPressed(){
+  int downPressed = digitalRead(PIN_BUTTON_DOWN);
 
-    if((currentTime - lastPressedTime) > BUTTON_DEBOUNCE){
-      lastPressedTime = currentTime;
-      return true;
-    } else {
-      return false;
-    }  
+  if(downPressed == LOW){
+    return buttonDebounceComplete();
+  } else {
+    return false;
+  }
+}
 
+bool buttonDebounceComplete(){
+  static unsigned long lastPressedTime = 0;
+  unsigned long currentTime = millis();
+
+  if((currentTime - lastPressedTime) > BUTTON_DEBOUNCE){
+    lastPressedTime = currentTime;
+    return true;
   } else {
     return false;
   }
 }
 
 void shortBeepXTimesNoDelay(int times){
-  beepsLeft = times;  
+  beepsLeft = times;
 }
 
 //We don't use delay from beeps to avoid holding up the controller
@@ -562,7 +614,7 @@ void shortBeepRunner(){
           beepCurrentlyOn = false;
           beepsLeft--;
       }
-      
+
     } else {
 
       if((currentTime - beepChangedTime) > BUZZER_BEEP_OFF_TIME){
@@ -572,7 +624,7 @@ void shortBeepRunner(){
       }
     }
   }
-  
+
 }
 
 //Returns true if temperature threshold has been reached
@@ -581,7 +633,7 @@ bool temperatureWarningCheck(float temperature){
   if(temperature >= TEMP_MAX){
     nextState = STATE_TEMP_MAX;
     return true;
-  
+
   } else if(temperature >= TEMP_WARN){
     static unsigned long lastTempAlert = 0;
 
@@ -589,13 +641,12 @@ bool temperatureWarningCheck(float temperature){
 
     if((currentTime - lastTempAlert) > TEMP_WARNING_RATE){
       lastTempAlert = currentTime;
-      shortBeepXTimesNoDelay(5); 
+      shortBeepXTimesNoDelay(5);
     }
 
     return true;
-    
+
   }
 
   return false;
 }
-
