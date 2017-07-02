@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>E:\Dropbox\repair kopitam\repair-kopitiam-training-and-equipment\short-circuit-limiter\schematic\short-circuit-limiter.sch</source>
+    <date>07/02/17 22:11:32</date>
+    <tool>Eeschema 4.0.6</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>short-circuit-limiter.sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="T1">
+      <value>Transformer_1P_1S</value>
+      <libsource lib="device" part="Transformer_1P_1S"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5921548A</tstamp>
+    </comp>
+    <comp ref="BZ1">
+      <value>Buzzer</value>
+      <libsource lib="device" part="Buzzer"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>595793F2</tstamp>
+    </comp>
+    <comp ref="MCU1">
+      <value>Industruino-1286</value>
+      <libsource lib="industruino1286" part="Industruino-1286"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958A51F</tstamp>
+    </comp>
+    <comp ref="SW2">
+      <value>SWITCH_DPST</value>
+      <libsource lib="MiscellaneousDevices" part="SWITCH_DPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958A737</tstamp>
+    </comp>
+    <comp ref="SW1">
+      <value>SWITCH_DPST</value>
+      <libsource lib="MiscellaneousDevices" part="SWITCH_DPST"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958B596</tstamp>
+    </comp>
+    <comp ref="U4">
+      <value>300XBXC1</value>
+      <libsource lib="300xbxc1" part="300XBXC1"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958B5AE</tstamp>
+    </comp>
+    <comp ref="P1">
+      <value>M1363</value>
+      <libsource lib="m1363" part="M1363"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958CF45</tstamp>
+    </comp>
+    <comp ref="U1">
+      <value>DS18B20</value>
+      <libsource lib="maxim" part="DS18B20"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958D3C8</tstamp>
+    </comp>
+    <comp ref="U2">
+      <value>D2450</value>
+      <footprint>SSR</footprint>
+      <libsource lib="d2450" part="D2450"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958E9BA</tstamp>
+    </comp>
+    <comp ref="U3">
+      <value>D2450</value>
+      <footprint>SSR</footprint>
+      <libsource lib="d2450" part="D2450"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958EB19</tstamp>
+    </comp>
+    <comp ref="R5">
+      <value>10ohm 225W</value>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958EE25</tstamp>
+    </comp>
+    <comp ref="R1">
+      <value>4.7K</value>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5958F7D1</tstamp>
+    </comp>
+    <comp ref="R2">
+      <value>470K</value>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>595914D2</tstamp>
+    </comp>
+    <comp ref="R3">
+      <value>470K</value>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59591A5F</tstamp>
+    </comp>
+    <comp ref="R4">
+      <value>33</value>
+      <libsource lib="device" part="R"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59591CD8</tstamp>
+    </comp>
+    <comp ref="C1">
+      <value>10uF</value>
+      <libsource lib="device" part="CP"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>59592095</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="300xbxc1" part="300XBXC1">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">300XBXC1</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="BiDi"/>
+        <pin num="2" name="2" type="BiDi"/>
+        <pin num="3" name="3" type="BiDi"/>
+        <pin num="4" name="4" type="BiDi"/>
+        <pin num="5" name="5" type="BiDi"/>
+        <pin num="6" name="6" type="BiDi"/>
+        <pin num="7" name="A" type="BiDi"/>
+        <pin num="8" name="B" type="BiDi"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="Buzzer">
+      <description>Buzzer, polar</description>
+      <footprints>
+        <fp>*Buzzer*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">BZ</field>
+        <field name="Value">Buzzer</field>
+      </fields>
+      <pins>
+        <pin num="1" name="-" type="passive"/>
+        <pin num="2" name="+" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="CP">
+      <description>Polarised capacitor</description>
+      <footprints>
+        <fp>CP_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">CP</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="d2450" part="D2450">
+      <footprints>
+        <fp>SIP4*Sharp*SSR*Pitch7.62mm*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">D2450</field>
+        <field name="Footprint">SSR</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="BiDi"/>
+        <pin num="2" name="~" type="BiDi"/>
+        <pin num="3" name="~" type="input"/>
+        <pin num="4" name="~" type="output"/>
+      </pins>
+    </libpart>
+    <libpart lib="industruino1286" part="Industruino-1286">
+      <fields>
+        <field name="Reference">MCU</field>
+        <field name="Value">Industruino-1286</field>
+      </fields>
+      <pins>
+        <pin num="1" name="RESET" type="input"/>
+        <pin num="2" name="+3.3V" type="power_out"/>
+        <pin num="3" name="GND" type="BiDi"/>
+        <pin num="4" name="+5V" type="power_in"/>
+        <pin num="5" name="D0/RX" type="BiDi"/>
+        <pin num="6" name="D1/TX" type="BiDi"/>
+        <pin num="7" name="D2/SDA" type="BiDi"/>
+        <pin num="8" name="D3/SCL" type="BiDi"/>
+        <pin num="9" name="+5V" type="power_in"/>
+        <pin num="10" name="GND" type="BiDi"/>
+        <pin num="11" name="VIN" type="power_in"/>
+        <pin num="12" name="D4" type="BiDi"/>
+        <pin num="13" name="D5" type="BiDi"/>
+        <pin num="14" name="D6" type="BiDi"/>
+        <pin num="15" name="D7" type="BiDi"/>
+        <pin num="16" name="D8" type="BiDi"/>
+        <pin num="17" name="D9" type="BiDi"/>
+        <pin num="18" name="D11/A11" type="BiDi"/>
+        <pin num="19" name="D12/A12" type="BiDi"/>
+        <pin num="20" name="D13/A13" type="BiDi"/>
+        <pin num="21" name="D17" type="BiDi"/>
+        <pin num="22" name="D18/A0" type="BiDi"/>
+        <pin num="23" name="AREF" type="BiDi"/>
+      </pins>
+    </libpart>
+    <libpart lib="m1363" part="M1363">
+      <fields>
+        <field name="Reference">P</field>
+        <field name="Value">M1363</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Earth" type="output"/>
+        <pin num="2" name="Live" type="power_in"/>
+        <pin num="3" name="Neutral" type="power_out"/>
+      </pins>
+    </libpart>
+    <libpart lib="maxim" part="MAX31820">
+      <aliases>
+        <alias>DS1822</alias>
+        <alias>DS18B20</alias>
+        <alias>DS18S20</alias>
+        <alias>DS1821C</alias>
+      </aliases>
+      <footprints>
+        <fp>TO-92_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">MAX31820</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="power_in"/>
+        <pin num="2" name="DQ" type="BiDi"/>
+        <pin num="3" name="VDD" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="R">
+      <description>Resistor</description>
+      <footprints>
+        <fp>R_*</fp>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="MiscellaneousDevices" part="SWITCH_DPST">
+      <fields>
+        <field name="Reference">SW</field>
+        <field name="Value">SWITCH_DPST</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+        <pin num="3" name="~" type="passive"/>
+        <pin num="4" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="Transformer_1P_1S">
+      <description>Transformer, single primary, single secondary</description>
+      <fields>
+        <field name="Reference">T</field>
+        <field name="Value">Transformer_1P_1S</field>
+      </fields>
+      <pins>
+        <pin num="1" name="AA" type="passive"/>
+        <pin num="2" name="AB" type="passive"/>
+        <pin num="3" name="SA" type="passive"/>
+        <pin num="4" name="SB" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="device">
+      <uri>C:\Program Files\KiCad\share\kicad\library\device.lib</uri>
+    </library>
+    <library logical="d2450">
+      <uri>libraries\d2450.lib</uri>
+    </library>
+    <library logical="MiscellaneousDevices">
+      <uri>libraries\MiscellaneousDevices.lib</uri>
+    </library>
+    <library logical="industruino1286">
+      <uri>libraries\industruino1286.lib</uri>
+    </library>
+    <library logical="m1363">
+      <uri>libraries\m1363.lib</uri>
+    </library>
+    <library logical="300xbxc1">
+      <uri>libraries\300xbxc1.lib</uri>
+    </library>
+    <library logical="maxim">
+      <uri>libraries\maxim.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="Net-(U3-Pad2)">
+      <node ref="U4" pin="7"/>
+      <node ref="U3" pin="2"/>
+    </net>
+    <net code="2" name="Net-(R5-Pad1)">
+      <node ref="SW2" pin="1"/>
+      <node ref="U4" pin="3"/>
+      <node ref="R5" pin="1"/>
+    </net>
+    <net code="3" name="Net-(R5-Pad2)">
+      <node ref="U4" pin="5"/>
+      <node ref="U2" pin="2"/>
+      <node ref="U3" pin="1"/>
+      <node ref="R5" pin="2"/>
+    </net>
+    <net code="4" name="Net-(MCU1-Pad7)">
+      <node ref="MCU1" pin="7"/>
+      <node ref="U1" pin="2"/>
+      <node ref="R1" pin="1"/>
+    </net>
+    <net code="5" name="Net-(P1-Pad2)">
+      <node ref="P1" pin="2"/>
+      <node ref="SW2" pin="2"/>
+    </net>
+    <net code="6" name="Net-(MCU1-Pad3)">
+      <node ref="U1" pin="1"/>
+      <node ref="MCU1" pin="3"/>
+      <node ref="T1" pin="3"/>
+    </net>
+    <net code="7" name="MAINS_EARTH">
+      <node ref="P1" pin="1"/>
+    </net>
+    <net code="8" name="Net-(P1-Pad3)">
+      <node ref="SW2" pin="3"/>
+      <node ref="P1" pin="3"/>
+    </net>
+    <net code="9" name="Net-(MCU1-Pad16)">
+      <node ref="MCU1" pin="16"/>
+    </net>
+    <net code="10" name="Net-(MCU1-Pad13)">
+      <node ref="U2" pin="3"/>
+      <node ref="MCU1" pin="13"/>
+    </net>
+    <net code="11" name="Net-(BZ1-Pad1)">
+      <node ref="MCU1" pin="12"/>
+      <node ref="BZ1" pin="1"/>
+    </net>
+    <net code="12" name="Net-(MCU1-Pad5)">
+      <node ref="MCU1" pin="5"/>
+    </net>
+    <net code="13" name="Net-(MCU1-Pad6)">
+      <node ref="MCU1" pin="6"/>
+    </net>
+    <net code="14" name="Net-(MCU1-Pad8)">
+      <node ref="MCU1" pin="8"/>
+    </net>
+    <net code="15" name="Net-(MCU1-Pad17)">
+      <node ref="MCU1" pin="17"/>
+    </net>
+    <net code="16" name="Net-(MCU1-Pad18)">
+      <node ref="MCU1" pin="18"/>
+    </net>
+    <net code="17" name="Net-(MCU1-Pad19)">
+      <node ref="MCU1" pin="19"/>
+    </net>
+    <net code="18" name="Net-(MCU1-Pad20)">
+      <node ref="MCU1" pin="20"/>
+    </net>
+    <net code="19" name="Net-(MCU1-Pad21)">
+      <node ref="MCU1" pin="21"/>
+    </net>
+    <net code="20" name="Net-(MCU1-Pad23)">
+      <node ref="MCU1" pin="23"/>
+    </net>
+    <net code="21" name="Net-(MCU1-Pad11)">
+      <node ref="MCU1" pin="11"/>
+    </net>
+    <net code="22" name="Net-(MCU1-Pad14)">
+      <node ref="MCU1" pin="14"/>
+    </net>
+    <net code="23" name="Net-(MCU1-Pad1)">
+      <node ref="MCU1" pin="1"/>
+    </net>
+    <net code="24" name="Net-(MCU1-Pad2)">
+      <node ref="MCU1" pin="2"/>
+    </net>
+    <net code="25" name="CT_CLAMP_INPUT1">
+      <node ref="R4" pin="1"/>
+      <node ref="MCU1" pin="22"/>
+    </net>
+    <net code="26" name="Net-(MCU1-Pad9)">
+      <node ref="R2" pin="2"/>
+      <node ref="MCU1" pin="9"/>
+    </net>
+    <net code="27" name="CT_CLAMP_INPUT2">
+      <node ref="R2" pin="1"/>
+      <node ref="C1" pin="2"/>
+      <node ref="R4" pin="2"/>
+      <node ref="R3" pin="2"/>
+    </net>
+    <net code="28" name="Net-(BZ1-Pad2)">
+      <node ref="C1" pin="1"/>
+      <node ref="R3" pin="1"/>
+      <node ref="U2" pin="4"/>
+      <node ref="MCU1" pin="10"/>
+      <node ref="U3" pin="4"/>
+      <node ref="BZ1" pin="2"/>
+    </net>
+    <net code="29" name="Net-(MCU1-Pad15)">
+      <node ref="U3" pin="3"/>
+      <node ref="MCU1" pin="15"/>
+    </net>
+    <net code="30" name="MAINS_NEUTRAL">
+      <node ref="SW1" pin="3"/>
+    </net>
+    <net code="31" name="Net-(SW1-Pad2)">
+      <node ref="T1" pin="1"/>
+      <node ref="SW1" pin="2"/>
+      <node ref="U2" pin="1"/>
+    </net>
+    <net code="32" name="Net-(U4-Pad1)">
+      <node ref="U4" pin="1"/>
+    </net>
+    <net code="33" name="Net-(U4-Pad2)">
+      <node ref="U4" pin="2"/>
+    </net>
+    <net code="34" name="Net-(U4-Pad4)">
+      <node ref="U4" pin="4"/>
+    </net>
+    <net code="35" name="Net-(U4-Pad6)">
+      <node ref="U4" pin="6"/>
+    </net>
+    <net code="36" name="MAINS_LIVE">
+      <node ref="SW1" pin="1"/>
+    </net>
+    <net code="37" name="Net-(MCU1-Pad4)">
+      <node ref="U1" pin="3"/>
+      <node ref="R1" pin="2"/>
+      <node ref="T1" pin="4"/>
+      <node ref="MCU1" pin="4"/>
+    </net>
+    <net code="38" name="Net-(SW1-Pad4)">
+      <node ref="SW2" pin="4"/>
+      <node ref="SW1" pin="4"/>
+      <node ref="U4" pin="8"/>
+      <node ref="T1" pin="2"/>
+    </net>
+  </nets>
+</export>

@@ -1,4 +1,4 @@
-update=07/01/17 22:59:37
+update=07/02/17 17:03:41
 version=1
 last_client=kicad
 [pcbnew]
@@ -63,3 +63,4 @@ LibName31=libraries/MiscellaneousDevices
 LibName32=libraries/m1363
 LibName33=libraries/300xbxc1
 LibName34=libraries/industruino1286
+LibName35=libraries/maxim
