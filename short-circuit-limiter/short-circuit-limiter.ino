@@ -481,7 +481,7 @@ STATE enterTempMaxMode(){
     Serial.println("Enter Max Temp mode");
   }
 
-  float temperature = 0;//getTemperature();
+  float temperature = getTemperature();
 
   //We remain in this mode until the temperature drops below TEMP_WARN to prevent oscillating into this mode and out
   if(temperature >= TEMP_WARN){
