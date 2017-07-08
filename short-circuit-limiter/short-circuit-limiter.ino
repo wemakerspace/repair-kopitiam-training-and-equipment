@@ -16,7 +16,7 @@
 #define TEMP_WARNING_RATE 120000 //2 x 60 x 1000ms
 
 #define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
-#define INITIAL_SETTLE_TIME 20000 //20 seconds
+#define INITIAL_SETTLE_TIME 30000 //30 seconds
 
 #define BUTTON_DEBOUNCE 300
 
