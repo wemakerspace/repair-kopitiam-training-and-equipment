@@ -16,7 +16,7 @@
 #define TEMP_WARNING_RATE 120000 //2 x 60 x 1000ms
 
 #define CT_CALIBRATION_VALUE 60.6  // (100A / 0.05A) / 33 ohms
-#define INITIAL_SETTLE_TIME 30000 //30 seconds
+#define INITIAL_SETTLE_TIME 20000 //20 seconds
 
 #define BUTTON_DEBOUNCE 300
 
@@ -46,9 +46,11 @@
 #define NUM_CT_SAMPLES 275
 
 //Delay between LCD Print to avoid slowing down data collection
-#define INTERVAL_PRINT 300
+#define INTERVAL_PRINT 500
 
 #define BACKLIGHT_BLINK_RATE 200
+
+#define DALLAS_RESOLUTION 9 //This will give faster read at 0.5C precision.
 
 typedef enum {
   STATE_MCB_TRIPPED, STATE_WINDOW_BEFORE, STATE_WINDOW_WITHIN, STATE_WINDOW_EXITED, STATE_TEMP_MAX
@@ -63,6 +65,7 @@ OneWire oneWire(PIN_TEMP);
 
 // Pass our oneWire reference to Dallas Temperature.
 DallasTemperature dallasTemp(&oneWire);
+DeviceAddress tempDeviceAddress;
 
 U8G2_UC1701_MINI12864_F_4W_SW_SPI u8g2(U8G2_R2, 21, 20, 19, 22);
 CTSensor clamp(PIN_CT, CT_CALIBRATION_VALUE);
@@ -95,6 +98,8 @@ void setup() {
 
   u8g2.begin();
   dallasTemp.begin();
+  dallasTemp.getAddress(tempDeviceAddress, 0);
+  dallasTemp.setResolution(tempDeviceAddress, DALLAS_RESOLUTION);
 
   unsigned long initialTime = millis();
   unsigned long timeElapsedSinceStart;
@@ -474,7 +479,7 @@ STATE enterTempMaxMode(){
     Serial.println("Enter Max Temp mode");
   }
 
-  float temperature = getTemperature();
+  float temperature = 0;//getTemperature();
 
   //We remain in this mode until the temperature drops below TEMP_WARN to prevent oscillating into this mode and out
   if(temperature >= TEMP_WARN){
@@ -559,7 +564,6 @@ void changeDisplayBacklight(bool state){
   }
 }
 
-//Obtained from https://learn.adafruit.com/tmp36-temperature-sensor/using-a-temp-sensor
 float getTemperature(){
   //There is only one sensor on the bus so just use the first one
   dallasTemp.requestTemperaturesByIndex(0);
