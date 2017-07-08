@@ -50,7 +50,8 @@
 
 #define BACKLIGHT_BLINK_RATE 200
 
-#define DALLAS_RESOLUTION 9 //This will give faster read at 0.5C precision.
+#define DALLAS_RESOLUTION 11 //This will give 0.125C precision
+#define DALLAS_READING_DELAY 750/ (1 << (12-DALLAS_RESOLUTION))
 
 typedef enum {
   STATE_MCB_TRIPPED, STATE_WINDOW_BEFORE, STATE_WINDOW_WITHIN, STATE_WINDOW_EXITED, STATE_TEMP_MAX
@@ -100,6 +101,7 @@ void setup() {
   dallasTemp.begin();
   dallasTemp.getAddress(tempDeviceAddress, 0);
   dallasTemp.setResolution(tempDeviceAddress, DALLAS_RESOLUTION);
+  dallasTemp.setWaitForConversion(false); //I'll read temperatures asynchronously
 
   unsigned long initialTime = millis();
   unsigned long timeElapsedSinceStart;
@@ -565,10 +567,21 @@ void changeDisplayBacklight(bool state){
 }
 
 float getTemperature(){
-  //There is only one sensor on the bus so just use the first one
-  dallasTemp.requestTemperaturesByIndex(0);
-  float temperature = dallasTemp.getTempCByIndex(0);
-  return temperature;
+
+  static float previousTemperature = -273.15;
+  static unsigned long previousReadingTime = 0;
+
+  unsigned long currentTime = millis();
+
+  if((currentTime - previousReadingTime) > DALLAS_READING_DELAY){
+    previousTemperature = dallasTemp.getTempCByIndex(0);
+    previousReadingTime = currentTime;
+    dallasTemp.requestTemperaturesByIndex(0);
+  }
+  
+  return previousTemperature; 
+
+ 
 }
 
 bool isTopButtonPressed(){
