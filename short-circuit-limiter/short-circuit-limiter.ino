@@ -46,7 +46,7 @@
 #define NUM_CT_SAMPLES 275
 
 //Delay between LCD Print to avoid slowing down data collection
-#define INTERVAL_PRINT 500
+#define INTERVAL_PRINT 300
 
 #define BACKLIGHT_BLINK_RATE 200
 
