@@ -11,13 +11,13 @@ If there is a short circuit in this one second window, the resistor holds down t
 ## Photo and video
 ![Screen](images/scl-prod-front.jpg)
 
-[![](http://img.youtube.com/vi/VpU6cOnxy0s/0.jpg)](https://www.youtube.com/watch?v=VpU6cOnxy0s)
+[![](http://img.youtube.com/vi/VpU6cOnxy0s/0.jpg)](https://www.youtube.com/watch?v=VpU6cOnxy0s)  
 Typical operation of device
 
-[![](http://img.youtube.com/vi/QWAE_0n4-p0/0.jpg)](https://www.youtube.com/watch?v=QWAE_0n4-p0)
+[![](http://img.youtube.com/vi/QWAE_0n4-p0/0.jpg)](https://www.youtube.com/watch?v=QWAE_0n4-p0)  
 Mechanical relay movement
 
-[![](http://img.youtube.com/vi/O4qB3WehqlA/0.jpg)](https://www.youtube.com/watch?v=O4qB3WehqlA)
+[![](http://img.youtube.com/vi/O4qB3WehqlA/0.jpg)](https://www.youtube.com/watch?v=O4qB3WehqlA)  
 Mechanical relay movement
 
 
