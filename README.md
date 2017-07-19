@@ -1,7 +1,7 @@
 # repair-kopitiam-training-and-equipment
 Training materials and equipment schematics for Repair Kopitiam.
 
-##Hackware talk
+## Hackware talk
 
 I gave a talk about these equipment at [Hackware v2.0](https://www.facebook.com/events/481593632030061/) on 27 July 2016. Here are the slides.
 
@@ -11,7 +11,7 @@ Here is the video
 
 [![](http://img.youtube.com/vi/OkuFtGhXB7U/0.jpg)](http://www.youtube.com/watch?v=OkuFtGhXB7U)
 
-##Training materials
+## Training materials
 
 Files of the slides and simulation material are found in the [training directory](training). Slides can be viewed using the picture link below.
 
@@ -21,7 +21,7 @@ Files of the slides and simulation material are found in the [training directory
 
 
 
-##Equipment
+## Equipment
 
 An oveview of all the specialty equipment.
 
