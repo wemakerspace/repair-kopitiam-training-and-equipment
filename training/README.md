@@ -4,5 +4,5 @@ Slides and simulation material used the training of new Repair Kopitiam coaches.
 
 [![My slides on slideshare](electrical-first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-electrical-training)
 
-##References
+## References
 1. Java circuit simulator obtained from http://www.falstad.com/circuit/
