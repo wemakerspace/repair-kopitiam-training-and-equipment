@@ -19,19 +19,20 @@ Files of the slides and simulation material are found in the [training directory
 
 [![Circuit breaker slides on slideshare](training/cb-first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-circuit-breaker-training)
 
-
-
 ## Equipment
 
 An oveview of all the specialty equipment.
 
 <a href="https://raw.githubusercontent.com/yeokm1/repair-kopitiam-training-and-equipment/master/rk-equip-overview-original.jpg"><img src="rk-equip-overview-small.jpg"></a>
-Click for higher resolution version.
+Some of the equipment in this picture have been deprecated. See the listing below for details.
 
-This repository so far contains only 5 pieces of equipment. More details can be found in the subdirectories.
+![Screen](short-circuit-limiter/images/scl-prod-front.jpg)
 
-1. [10mA RCBO](10ma-rcbo)
-2. [trip-10ma-rccb-only-tool](trip-10ma-rccb-only-tool)
+This repository so far contains 6 pieces of equipment. More details can be found in the subdirectories.
+
+1. [10mA RCBO](10ma-rcbo) (Deprecated)
+2. [trip-10ma-rccb-only-tool](trip-10ma-rccb-only-tool) (Deprecated)
 3. [anti-trip-earth-leakage-detector](anti-trip-earth-leakage-detector)
 4. [10ma-rcbo-and-anti-external-cb-trip](10ma-rcbo-and-anti-external-cb-trip)
-5. [10ma-rcbo-mcb-and-anti-external-cb-trip](10ma-rcbo-mcb-and-anti-external-cb-trip)
+5. [10ma-rcbo-mcb-and-anti-external-cb-trip](10ma-rcbo-mcb-and-anti-external-cb-trip) (In use but overkill)
+6. [short-circuit-limiter](short-circuit-limiter)
