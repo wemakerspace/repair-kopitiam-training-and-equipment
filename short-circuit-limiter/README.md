@@ -34,5 +34,12 @@ Electrical schematic in Kicad format.
 
 ![Screen](images/scl-prod-internal-standby.jpg)
 
+## Arduino setup
+1. Download and install the latest [Arduino IDE](https://www.arduino.cc/en/Main/Software) which is version 1.8.3 at time of writing.
+2. Install the [board definition files](https://github.com/Industruino/Board-definition-files) for the Industruino-1286
+3. Install the Arduino libraries: DallasTemperature, OneWire and U8g2.
+4. Connect the micro-USB cable.
+4. Open `short-circuit-limiter.ino`. Select Industruino-1286, the associated port and hit upload!
+
 ## Parts
 All the parts used in the build can be found in the [BOM file](schematic/short-circuit-limiter-bom.ods).
