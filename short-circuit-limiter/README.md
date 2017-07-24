@@ -1,6 +1,6 @@
 # short-circuit-limiter
 
-This short circuit limiter is to prevent short circuits from causing trips to the external MCB.
+This short circuit limiter is to prevent short circuits from causing trips to the external MCB. I've written a [detailed blog post](http://yeokhengmeng.com/2017/07/repair-kopitiam-specialty-electrical-tools-part-2-short-circuit-limiter/) on this device.
 
 # How it works? (High-level)
 
