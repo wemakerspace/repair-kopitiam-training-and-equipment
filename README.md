@@ -1,5 +1,5 @@
 # repair-kopitiam-training-and-equipment
-Training materials and equipment schematics for Repair Kopitiam.
+Training materials and equipment schematics for Repair Kopitiam. Detailed blog posts behind this can be found here: [Part 1](http://yeokhengmeng.com/2016/05/repair-kopitiam-speciality-electrical-tools/) and [Part 2](http://yeokhengmeng.com/2017/07/repair-kopitiam-specialty-electrical-tools-part-2-short-circuit-limiter/).
 
 <a href="https://raw.githubusercontent.com/yeokm1/repair-kopitiam-training-and-equipment/master/rk-equip-overview-original.jpg"><img src="rk-equip-overview-small.jpg"></a>
 Some of the equipment in this picture have been deprecated. See the listing below for details.
