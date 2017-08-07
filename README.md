@@ -1,28 +1,6 @@
 # repair-kopitiam-training-and-equipment
 Training materials and equipment schematics for Repair Kopitiam.
 
-## Hackware talk
-
-I gave a talk about these equipment at [Hackware v2.0](https://www.facebook.com/events/481593632030061/) on 27 July 2016. Here are the slides.
-
-[![My slides on slideshare](rk-hackware-first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-specialty-electrical-equipment)
-
-Here is the video
-
-[![](http://img.youtube.com/vi/OkuFtGhXB7U/0.jpg)](http://www.youtube.com/watch?v=OkuFtGhXB7U)
-
-## Training materials
-
-Files of the slides and simulation material are found in the [training directory](training). Slides can be viewed using the picture link below.
-
-[![Electrical slides on slideshare](training/electrical-first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-electrical-training)
-
-[![Circuit breaker slides on slideshare](training/cb-first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-circuit-breaker-training)
-
-## Equipment
-
-An oveview of all the specialty equipment.
-
 <a href="https://raw.githubusercontent.com/yeokm1/repair-kopitiam-training-and-equipment/master/rk-equip-overview-original.jpg"><img src="rk-equip-overview-small.jpg"></a>
 Some of the equipment in this picture have been deprecated. See the listing below for details.
 
@@ -36,3 +14,15 @@ This repository so far contains 6 pieces of equipment. More details can be found
 4. [10ma-rcbo-and-anti-external-cb-trip](10ma-rcbo-and-anti-external-cb-trip)
 5. [10ma-rcbo-mcb-and-anti-external-cb-trip](10ma-rcbo-mcb-and-anti-external-cb-trip) (In use but overkill)
 6. [short-circuit-limiter](short-circuit-limiter)
+
+## Hackware talks
+
+1. Part 1 at [Hackware v2.0](https://www.facebook.com/events/481593632030061/) on 27 July 2016: [Slides](http://www.slideshare.net/yeokm1/repair-kopitiam-specialty-electrical-equipment) and [Video](http://www.youtube.com/watch?v=OkuFtGhXB7U) about Equipment 1-4.
+
+2. Part 2 at [Hackware v3.4](https://www.facebook.com/events/261629434317053/) on 6 Sept 2017: [Slides](https://www.slideshare.net/yeokm1/repair-kopitiam-specialty-tools-part-2-short-circuit-limiter) about the short-circuit-limiter.
+
+## Training materials
+
+Files of the slides and simulation material are found in the [training directory](training). Slides can be viewed using the picture link below.
+
+[![Circuit breaker slides on slideshare](training/cb-first-slide.png)](http://www.slideshare.net/yeokm1/repair-kopitiam-circuit-breaker-training)
