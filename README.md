@@ -19,7 +19,7 @@ This repository so far contains 6 pieces of equipment. More details can be found
 
 1. Part 1 at [Hackware v2.0](https://www.facebook.com/events/481593632030061/) on 27 July 2016: [Slides](http://www.slideshare.net/yeokm1/repair-kopitiam-specialty-electrical-equipment) and [Video](http://www.youtube.com/watch?v=OkuFtGhXB7U) about Equipment 1-4.
 
-2. Part 2 at [Hackware v3.4](https://www.facebook.com/events/261629434317053/) on 6 Sept 2017: [Slides](https://www.slideshare.net/yeokm1/repair-kopitiam-specialty-tools-part-2-short-circuit-limiter) about the short-circuit-limiter.
+2. Part 2 at [Hackware v3.4](https://www.facebook.com/events/261629434317053/) on 6 Sept 2017: [Slides](https://www.slideshare.net/yeokm1/repair-kopitiam-specialty-tools-part-2-short-circuit-limiter) and [Video](https://www.youtube.com/watch?v=BM9I_tabfC8) about the short-circuit-limiter.
 
 ## Training materials
 
