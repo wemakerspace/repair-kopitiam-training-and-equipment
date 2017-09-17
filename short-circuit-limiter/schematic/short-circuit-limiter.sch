@@ -381,7 +381,7 @@ Connection ~ 5550 5250
 Wire Wire Line
 	4800 5250 5050 5250
 Wire Wire Line
-	3600 4650 3600 5050
+	3600 4650 3600 5350
 Wire Wire Line
 	3600 5050 4450 5050
 Wire Wire Line
@@ -438,11 +438,15 @@ NoConn ~ 4950 4650
 NoConn ~ 5100 4650
 NoConn ~ 5250 4650
 NoConn ~ 5400 4650
-NoConn ~ 5700 4650
 NoConn ~ 3900 4650
 NoConn ~ 4350 4650
 Text Notes 9050 4400 0    60   ~ 0
 CT clamp around this wire
 NoConn ~ 3600 2950
 NoConn ~ 3750 2950
+Wire Wire Line
+	5700 4650 5700 5350
+Wire Wire Line
+	5700 5350 3600 5350
+Connection ~ 3600 5050
 $EndSCHEMATC
