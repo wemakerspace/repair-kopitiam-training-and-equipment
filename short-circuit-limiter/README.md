@@ -39,7 +39,7 @@ Electrical schematic in Kicad format.
 2. Install the [board definition files](https://github.com/Industruino/Board-definition-files) for the Industruino-1286
 3. Install the Arduino libraries: DallasTemperature, OneWire and U8g2.
 4. Connect the micro-USB cable.
-4. Open `short-circuit-limiter.ino`. Select Industruino-1286, the associated port and hit upload!
+5. Open `short-circuit-limiter.ino`. Select Industruino-1286, the associated port and hit upload!
 
 ## Parts
 All the parts used in the build can be found in the [BOM file](schematic/short-circuit-limiter-bom.ods).
