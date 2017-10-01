@@ -5,8 +5,6 @@ CTSensor::CTSensor(int adcPinNum, double calibrationValue) {
     adcPinNum_ = adcPinNum;
     calibrationValue_ = calibrationValue;
     offsetI_ = ADC_COUNTS >> 1;
-
-    pinMode(adcPinNum, INPUT);
 }
 
 
