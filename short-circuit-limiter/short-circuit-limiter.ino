@@ -83,6 +83,8 @@ void setup() {
 
   currentEnableThreshold = getEnableThresholdFromEEProm();
 
+  analogReference(EXTERNAL);
+  
   pinMode(PIN_LED, OUTPUT);
   pinMode(PIN_BUZZER, OUTPUT);
 
