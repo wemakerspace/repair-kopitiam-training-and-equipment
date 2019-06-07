@@ -8,6 +8,8 @@ Tool to prevent circuit breaker trips on both 10mA and 30mA residual current bre
 ## Photo
 ![Screen](anti-trip-earth-leakage-detector-front.jpg)
 
+![Screen](powerpac-bar-modified.jpg)
+
 ## Usage instructions
 
 1. Do NOT use without prior training or supervision.
@@ -25,7 +27,11 @@ Electrical schematic in Eagle format. I put 2 LEDS in opposite directions to ens
 ![Screen](anti-trip-earth-leakage-detector-internal.jpg)
 The rightmost button has been converted to a test button where the socket live is connected to the earth line by a green wire to simulate a faulty appliance. If pressed, the blue LEDS should light up with no trip on either the 10mA or 30mA RCCB/RCBO.
 
+![Screen](powerpac-bar-modified-internals.jpg)
+As I cannot locate the original SPIDER power bar with transparent area, I chose this Powerpac alternative.
+
 ## Parts
-1. Any power strip with a translucent area so the LEDs are visible.
+1. Any power strip with a transparent area so the LEDs are visible like Powerpac PP3882N.
+![Screen](powerpac-bar.jpg)
 2. [62k ohm, 2W, 5% throughhole resistor](http://sg.element14.com/vishay-bc-components/pr02000206202jr500/metal-film-resistor-62-kohm-2/dp/3173483)
 3. [2x blue 5mm LEDS, 20mA, 6000mcd](http://sg.element14.com/multicomp/mcl053ublc-2z-2-8/led-5mm-blue-600mcd-470nm/dp/2365811)
